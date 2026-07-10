@@ -44,6 +44,8 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
 .leaderMeta{margin-top:8px;font-weight:900;color:var(--navy)}
 .profileInfo{border:3px solid var(--navy);background:#fff7d6;padding:8px;font-weight:900;text-align:left}
 .profileBest{border:3px solid var(--navy);background:#eafff1;padding:8px;font-weight:900;text-align:left;margin-top:8px}
+.builderFields{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.lessonBox{grid-column:1/-1;border:3px solid var(--navy);background:#eafff1;padding:8px;font-weight:900;text-align:left}
 .summaryGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
 .summaryCard{border:3px solid var(--navy);background:#f4f8fc;padding:10px;font-weight:1000}
 .summaryCard small{display:block;margin-bottom:4px;color:#31445c}
@@ -72,6 +74,7 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
   .hud{top:42px;left:5px;right:5px}
   .chip{font-size:10px;min-width:59px;padding:4px;border-width:2px;box-shadow:2px 2px 0 var(--navy)}
   .form,.legend{grid-template-columns:1fr}
+  .builderFields{grid-template-columns:1fr}
   .leaderFilters{grid-template-columns:1fr}
   .leaderTabs{grid-template-columns:1fr;gap:6px}
   .summaryGrid{grid-template-columns:1fr 1fr}
@@ -95,24 +98,28 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
     <div class="chip">GOAL <span id="goal">200</span></div>
   </div>
   <div class="group">
-    <div class="chip">👥 <span id="members">1</span></div>
-    <div class="chip">🔥 <span id="streak">0</span></div>
+    <div class="chip">ðŸ‘¥ <span id="members">1</span></div>
+    <div class="chip">ðŸ”¥ <span id="streak">0</span></div>
+    <div class="chip hidden" id="cashChip" style="background:#eafff1">CASH $<span id="cash">0</span></div>
+    <div class="chip hidden" id="churnChip" style="background:#fff7d6">CHURN <span id="churn">0</span>%</div>
+    <div class="chip hidden" id="repChip" style="background:#f4f8fc">REP <span id="reputation">50</span></div>
+    <div class="chip hidden" id="energyChip" style="background:#fff">ENERGY <span id="energy">100</span></div>
     <div class="chip hidden" id="mrrChip" style="background:#eafff1">MRR $<span id="mrr">0</span></div>
     <div class="chip hidden" id="winChip" style="background:#fff7d6">WIN $<span id="winMrr">0</span></div>
   </div>
 </div>
 <div id="decisionText" class="hidden"></div>
 <div id="notice" class="hidden"></div>
-<div id="swipeHint">↔ SWIPE TO CHANGE LANES</div>
+<div id="swipeHint">â†” SWIPE TO CHANGE LANES</div>
 
 <div class="controls">
-  <button class="btn" id="pauseBtn">⏸</button>
-  <button class="btn" id="leftBtn">◀</button>
-  <button class="btn" id="rightBtn">▶</button>
+  <button class="btn" id="pauseBtn">â¸</button>
+  <button class="btn" id="leftBtn">â—€</button>
+  <button class="btn" id="rightBtn">â–¶</button>
 </div>
-<button class="btn corner" id="fullscreenBtn">⛶</button>
-<button class="btn corner" id="musicBtn">♫</button>
-<button class="btn corner" id="settingsBtn">⚙</button>
+<button class="btn corner" id="fullscreenBtn">â›¶</button>
+<button class="btn corner" id="musicBtn">â™«</button>
+<button class="btn corner" id="settingsBtn">âš™</button>
 
 <button class="btn corner" id="leaderboardBtn">LB</button>
 
@@ -122,23 +129,30 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
     <p>Swipe left or right to change lanes. Reach 500 activity, monetize your community, and hit your MRR target.</p>
     <div class="form">
       <label>PLAYER NAME<input id="playerName" value="Player" maxlength="18"></label>
+      <label>MODE<select id="gameMode"><option value="arcade">Arcade Mode</option><option value="builder">Community Builder Mode</option></select></label>
       <label>CATEGORY<select id="category"></select></label>
       <label>DIFFICULTY<select id="difficulty"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select></label>
+      <div class="builderFields" id="builderFields">
+        <label>AUDIENCE<select id="audience"><option value="creators">Creators</option><option value="coaches">Coaches</option><option value="founders">Founders</option><option value="fitness">Fitness students</option></select></label>
+        <label>PROBLEM<select id="problem"><option value="growth">Need growth</option><option value="accountability">Need accountability</option><option value="sales">Need sales</option><option value="skills">Need skills</option></select></label>
+        <label>FIRST OFFER<select id="firstOffer"><option value="challenge">7-day challenge</option><option value="starter">Starter membership</option><option value="workshop">One-time workshop</option><option value="trial">Free trial</option></select></label>
+      </div>
       <div class="info" id="categoryInfo"></div>
+      <div class="lessonBox" id="modeLesson"></div>
     </div>
     <div class="profileInfo" id="profileInfo"></div>
     <div class="profileBest" id="profileBest"></div>
     <div class="legend">
-      <div>👤 Member: +1 member, +10 activity; after monetization +$30 MRR.</div>
-      <div>📝 Post: +20 activity.</div>
-      <div>🔥 Flame: +3 activity and churn protection.</div>
+      <div>ðŸ‘¤ Member: +1 member, +10 activity; after monetization +$30 MRR.</div>
+      <div>ðŸ“ Post: +20 activity.</div>
+      <div>ðŸ”¥ Flame: +3 activity and churn protection.</div>
       <div>CHURN: lose members, activity, and MRR.</div>
-      <div>👤❗ Spam Risk: good member or half your activity.</div>
-      <div>🚀 Growth Boost: rare member trail.</div>
+      <div>ðŸ‘¤â— Spam Risk: good member or half your activity.</div>
+      <div>ðŸš€ Growth Boost: rare member trail.</div>
       <div>7-DAY FREE TRIAL: +10 paying members and +$300 MRR.</div>
-      <div>💲 Dollar: +$100 MRR.</div>
-      <div>About Page: “Adjust About Page” or “Make No Adjustments”; both are risky.</div>
-      <div>At 500 activity: choose Monetize or Don’t Monetize.</div>
+      <div>ðŸ’² Dollar: +$100 MRR.</div>
+      <div>About Page: â€œAdjust About Pageâ€ or â€œMake No Adjustmentsâ€; both are risky.</div>
+      <div>At 500 activity: choose Monetize or Donâ€™t Monetize.</div>
     </div>
     <button class="primary" id="startBtn">START GAME</button>
   </div>
@@ -204,8 +218,8 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
 const $=id=>document.getElementById(id);
 const canvas=$('game'),ctx=canvas.getContext('2d'),shell=$('shell');
 ctx.imageSmoothingEnabled=false;
-const ui={level:$('level'),activity:$('activity'),goal:$('goal'),members:$('members'),streak:$('streak'),catHud:$('catHud'),modeHud:$('modeHud'),mrrChip:$('mrrChip'),winChip:$('winChip'),mrr:$('mrr'),winMrr:$('winMrr'),notice:$('notice'),decisionText:$('decisionText'),startOverlay:$('startOverlay'),pauseOverlay:$('pauseOverlay'),winOverlay:$('winOverlay'),winSubmitStatus:$('winSubmitStatus'),winSummaryMrr:$('winSummaryMrr'),winSummaryScore:$('winSummaryScore'),winSummaryRank:$('winSummaryRank'),winSummaryActivity:$('winSummaryActivity'),winSummaryMembers:$('winSummaryMembers'),winSummaryMode:$('winSummaryMode'),settingsOverlay:$('settingsOverlay'),leaderboardOverlay:$('leaderboardOverlay'),leaderboardStatus:$('leaderboardStatus'),leaderboardList:$('leaderboardList'),leaderboardMeta:$('leaderboardMeta'),leaderboardCategory:$('leaderboardCategory'),leaderboardDifficulty:$('leaderboardDifficulty'),category:$('category'),difficulty:$('difficulty'),settingsCategory:$('settingsCategory'),settingsDifficulty:$('settingsDifficulty'),categoryInfo:$('categoryInfo'),profileInfo:$('profileInfo'),profileBest:$('profileBest'),playerName:$('playerName'),swipeHint:$('swipeHint')};
-const GAME_VERSION='0.12.1-canvas-profile';
+const ui={level:$('level'),activity:$('activity'),goal:$('goal'),members:$('members'),streak:$('streak'),catHud:$('catHud'),modeHud:$('modeHud'),cashChip:$('cashChip'),churnChip:$('churnChip'),repChip:$('repChip'),energyChip:$('energyChip'),cash:$('cash'),churn:$('churn'),reputation:$('reputation'),energy:$('energy'),mrrChip:$('mrrChip'),winChip:$('winChip'),mrr:$('mrr'),winMrr:$('winMrr'),notice:$('notice'),decisionText:$('decisionText'),startOverlay:$('startOverlay'),pauseOverlay:$('pauseOverlay'),winOverlay:$('winOverlay'),winSubmitStatus:$('winSubmitStatus'),winSummaryMrr:$('winSummaryMrr'),winSummaryScore:$('winSummaryScore'),winSummaryRank:$('winSummaryRank'),winSummaryActivity:$('winSummaryActivity'),winSummaryMembers:$('winSummaryMembers'),winSummaryMode:$('winSummaryMode'),settingsOverlay:$('settingsOverlay'),leaderboardOverlay:$('leaderboardOverlay'),leaderboardStatus:$('leaderboardStatus'),leaderboardList:$('leaderboardList'),leaderboardMeta:$('leaderboardMeta'),leaderboardCategory:$('leaderboardCategory'),leaderboardDifficulty:$('leaderboardDifficulty'),category:$('category'),difficulty:$('difficulty'),settingsCategory:$('settingsCategory'),settingsDifficulty:$('settingsDifficulty'),categoryInfo:$('categoryInfo'),profileInfo:$('profileInfo'),profileBest:$('profileBest'),playerName:$('playerName'),gameMode:$('gameMode'),builderFields:$('builderFields'),audience:$('audience'),problem:$('problem'),firstOffer:$('firstOffer'),modeLesson:$('modeLesson'),swipeHint:$('swipeHint')};
+const GAME_VERSION='0.13.0-community-builder';
 const PLAYER_ID_KEY='skoolGamePlayerId';
 const PLAYER_NAME_KEY='skoolGamePlayerName';
 const PLAYER_BEST_KEY='skoolGameBestRun';
@@ -220,7 +234,7 @@ function updateBestRun(run,rank){if(!run)return;const old=readBestRun();const sc
 const music=new Audio('/audio/SKOOL%20GAME.wav');
 music.loop=true;music.volume=.35;music.preload='auto';
 let musicMuted=localStorage.getItem('skoolGameMusicMuted')==='true';
-function updateMusicButton(){const b=$('musicBtn');if(b)b.textContent=musicMuted?'M':'♫'}
+function updateMusicButton(){const b=$('musicBtn');if(b)b.textContent=musicMuted?'M':'â™«'}
 function syncMusic(){if(musicMuted||!s?.running||s.paused){music.pause();return}music.play().catch(()=>{})}
 function toggleMusic(){musicMuted=!musicMuted;localStorage.setItem('skoolGameMusicMuted',String(musicMuted));updateMusicButton();if(!musicMuted)unlockAudio();syncMusic()}
 let audioCtx=null,lastSfxAt=0;
@@ -244,18 +258,26 @@ else if(name==='bad'){tone(220,.09,'sawtooth',.055);tone(130,.12,'sawtooth',.045
 else if(name==='win'){tone(520,.12,'square',.07);tone(660,.12,'square',.065,.12);tone(780,.14,'square',.065,.24);tone(1040,.22,'triangle',.06,.38)}
 }
 const cats={
-hobbies:{name:'Hobbies',f:.78,m:1,icons:['🎸','🎹','⚽','🎨','📷'],desc:'Lower competition.'},
-music:{name:'Music',f:.88,m:1.1,icons:['🎸','🎹','🥁','🎤','🎧'],desc:'Creative, moderate competition.'},
-money:{name:'Money',f:1.35,m:2.2,icons:['💵','📈','💼','🪙','🏦'],desc:'Very competitive.'},
-spirituality:{name:'Spirituality',f:.92,m:1.2,icons:['🧘','✨','🌙','🕯️','🌿'],desc:'Balanced growth.'},
-tech:{name:'Tech',f:1.28,m:2,icons:['💻','🤖','⌨️','🧠','📱'],desc:'Fast and highly competitive.'},
-health:{name:'Health',f:1.08,m:1.45,icons:['🥗','🏋️','🧘','❤️','🏃'],desc:'Strong demand.'},
-careers:{name:'Careers',f:1.05,m:1.4,icons:['💼','📄','🎯','🧑‍💻','🏢'],desc:'Steady competition.'},
-sports:{name:'Sports',f:.95,m:1.25,icons:['⚽','🏀','🎾','🏈','🏆'],desc:'Active members.'},
-love:{name:'Love',f:.9,m:1.15,icons:['❤️','💬','🌹','💍','🤝'],desc:'Lower speed, spam still matters.'},
-selfImprovement:{name:'Self Improvement',f:1.15,m:1.65,icons:['📚','🎯','🧠','⏰','🚀'],desc:'Popular and demanding.'}
+hobbies:{name:'Hobbies',f:.78,m:1,icons:['ðŸŽ¸','ðŸŽ¹','âš½','ðŸŽ¨','ðŸ“·'],desc:'Lower competition.'},
+music:{name:'Music',f:.88,m:1.1,icons:['ðŸŽ¸','ðŸŽ¹','ðŸ¥','ðŸŽ¤','ðŸŽ§'],desc:'Creative, moderate competition.'},
+money:{name:'Money',f:1.35,m:2.2,icons:['ðŸ’µ','ðŸ“ˆ','ðŸ’¼','ðŸª™','ðŸ¦'],desc:'Very competitive.'},
+spirituality:{name:'Spirituality',f:.92,m:1.2,icons:['ðŸ§˜','âœ¨','ðŸŒ™','ðŸ•¯ï¸','ðŸŒ¿'],desc:'Balanced growth.'},
+tech:{name:'Tech',f:1.28,m:2,icons:['ðŸ’»','ðŸ¤–','âŒ¨ï¸','ðŸ§ ','ðŸ“±'],desc:'Fast and highly competitive.'},
+health:{name:'Health',f:1.08,m:1.45,icons:['ðŸ¥—','ðŸ‹ï¸','ðŸ§˜','â¤ï¸','ðŸƒ'],desc:'Strong demand.'},
+careers:{name:'Careers',f:1.05,m:1.4,icons:['ðŸ’¼','ðŸ“„','ðŸŽ¯','ðŸ§‘â€ðŸ’»','ðŸ¢'],desc:'Steady competition.'},
+sports:{name:'Sports',f:.95,m:1.25,icons:['âš½','ðŸ€','ðŸŽ¾','ðŸˆ','ðŸ†'],desc:'Active members.'},
+love:{name:'Love',f:.9,m:1.15,icons:['â¤ï¸','ðŸ’¬','ðŸŒ¹','ðŸ’','ðŸ¤'],desc:'Lower speed, spam still matters.'},
+selfImprovement:{name:'Self Improvement',f:1.15,m:1.65,icons:['ðŸ“š','ðŸŽ¯','ðŸ§ ','â°','ðŸš€'],desc:'Popular and demanding.'}
 };
 const diffs={easy:{speed:.85,h:.75,g:.85,base:2000},normal:{speed:1,h:1,g:1,base:3000},hard:{speed:1.18,h:1.25,g:1.2,base:5000}};
+const builderAudiences={creators:{name:'Creators',lead:1.08,quality:.95},coaches:{name:'Coaches',lead:.92,quality:1.15},founders:{name:'Founders',lead:.82,quality:1.28},fitness:{name:'Fitness students',lead:1.18,quality:.88}};
+const builderProblems={growth:{name:'Need growth',demand:1.15,retention:.92},accountability:{name:'Need accountability',demand:.95,retention:1.18},sales:{name:'Need sales',demand:1.08,retention:1.05},skills:{name:'Need skills',demand:1,retention:1}};
+const builderOffers={challenge:{name:'7-day challenge',cash:120,conversion:.9,retention:.92},starter:{name:'Starter membership',cash:250,conversion:1,retention:1},workshop:{name:'One-time workshop',cash:420,conversion:.78,retention:.86},trial:{name:'Free trial',cash:40,conversion:1.22,retention:.82}};
+const builderLessons={
+attract:{what:'Signups changed.',why:'Attraction offers change the first yes.',cost:'More leads can lower quality if the promise is too broad.'},
+convert:{what:'Paid members changed.',why:'Different leads need different ways to buy.',cost:'A discount is not a strategy; structure matters.'},
+retain:{what:'Churn, reputation, and energy changed.',why:'Members stay when they keep getting results.',cost:'Delivery systems use time, cash, or team capacity.'}
+};
 const avatarStyles=[
 {shirt:'#ff493b',hair:'#3b241a',longHair:false},{shirt:'#ffc83d',hair:'#3b241a',longHair:true},{shirt:'#43b8f4',hair:'#513018',longHair:false},{shirt:'#2fd16f',hair:'#1f1b2e',longHair:true},{shirt:'#9b6cff',hair:'#6b3d1f',longHair:false},{shirt:'#ff8a3d',hair:'#25170f',longHair:true},{shirt:'#2f61ff',hair:'#171a2a',longHair:false},{shirt:'#f35fbf',hair:'#4c2b1a',longHair:true}];
 const feedback={
@@ -280,9 +302,15 @@ function goal(l){let b=l===1?200:l===2?500:500+((l-2)*(l-1)/2)*400;return Math.r
 function winGoal(){return Math.round(diff().base*cat().m/100)*100}
 function key(){return`skool:${s.category}:${s.difficulty}:${s.name}`}
 function save(){const old=JSON.parse(localStorage.getItem(key())||'{}');localStorage.setItem(key(),JSON.stringify({activity:Math.max(old.activity||0,s.activity),members:Math.max(old.members||1,s.members),mrr:Math.max(old.mrr||0,s.mrr),level:Math.max(old.level||1,s.level)}))}
-function reset(){s={running:false,paused:false,name:playerName(),category:ui.category.value,difficulty:ui.difficulty.value,player:{lane:1,x:laneX(1,H-140),tx:laneX(1,H-140),y:H-140},objects:[],particles:[],followers:[],members:1,activity:0,level:1,streak:0,shield:0,mrr:0,monetized:false,offered:false,won:false,winShown:false,runStartTime:0,scoreSubmitted:false,submittedRun:null,speed:4.2*cats[ui.category.value].f*diffs[ui.difficulty.value].speed,spawn:0,time:0,offset:0,decision:null,decisionCooldown:360,notice:0,boost:false,boostFrames:0,boostSpawn:0,boostLane:1,boostLaneTimer:0,magnetFrames:0,empty:0};syncFollowers();hud()}
+function isBuilderMode(){return ui.gameMode.value==='builder'}
+function builderProfile(){return{audience:builderAudiences[ui.audience.value],problem:builderProblems[ui.problem.value],offer:builderOffers[ui.firstOffer.value]}}
+function clamp(n,min,max){return Math.max(min,Math.min(max,n))}
+function learning(stage){const l=builderLessons[stage];return l?'What happened: '+l.what+' Why: '+l.why+' Hidden cost: '+l.cost:''}
+function showLearning(stage){if(!s.builder)return;notice(learning(stage));s.notice=190}
+function adjustBuilder({cash=0,churn=0,rep=0,energy=0,paid=0,activity=0}={}){if(!s.builder)return;s.cash=Math.max(0,s.cash+cash);s.churn=clamp(s.churn+churn,0,45);s.reputation=clamp(s.reputation+rep,0,100);s.energy=clamp(s.energy+energy,0,100);s.paidMembers=Math.max(0,s.paidMembers+paid);if(activity)gainActivity(activity);if(s.monetized&&paid>0)addMRR(paid*30,false)}
+function reset(){const bp=builderProfile();s={running:false,paused:false,name:playerName(),category:ui.category.value,difficulty:ui.difficulty.value,builder:isBuilderMode(),audience:ui.audience.value,problem:ui.problem.value,firstOffer:ui.firstOffer.value,player:{lane:1,x:laneX(1,H-140),tx:laneX(1,H-140),y:H-140},objects:[],particles:[],followers:[],members:1,paidMembers:0,cash:isBuilderMode()?bp.offer.cash:0,churn:isBuilderMode()?Math.round(8/bp.problem.retention):0,reputation:isBuilderMode()?55:50,energy:isBuilderMode()?100:100,activity:0,level:1,streak:0,shield:0,mrr:0,monetized:false,offered:false,won:false,winShown:false,runStartTime:0,scoreSubmitted:false,submittedRun:null,speed:4.2*cats[ui.category.value].f*diffs[ui.difficulty.value].speed*(isBuilderMode()?bp.audience.lead:1),spawn:0,time:0,offset:0,decision:null,decisionCooldown:isBuilderMode()?220:360,notice:0,boost:false,boostFrames:0,boostSpawn:0,boostLane:1,boostLaneTimer:0,magnetFrames:0,empty:0};syncFollowers();hud()}
 function streakMult(){return s.streak>=20?3:s.streak>=10?2:s.streak>=5?1.5:s.streak>=3?1.2:1}
-function hud(){if(s.won&&!s.winShown)showWinSummary();if(s.won&&!s.scoreSubmitted)submitRun('win');ui.level.textContent=s.level;ui.activity.textContent=Math.floor(s.activity);ui.goal.textContent=goal(s.level);ui.members.textContent=s.members;ui.streak.textContent=s.streak+(streakMult()>1?' x'+streakMult():'');ui.catHud.textContent=cat().name.toUpperCase();ui.modeHud.textContent=s.magnetFrames>0?'MAGNET':s.monetized?'MONETIZED':'FREE';ui.mrr.textContent=Math.floor(s.mrr);ui.winMrr.textContent=winGoal();ui.mrrChip.classList.toggle('hidden',!s.monetized);ui.winChip.classList.toggle('hidden',!s.monetized)}
+function hud(){if(s.won&&!s.winShown)showWinSummary();if(s.won&&!s.scoreSubmitted)submitRun('win');ui.level.textContent=s.level;ui.activity.textContent=Math.floor(s.activity);ui.goal.textContent=goal(s.level);ui.members.textContent=s.members;ui.streak.textContent=s.streak+(streakMult()>1?' x'+streakMult():'');ui.catHud.textContent=cat().name.toUpperCase();ui.modeHud.textContent=s.builder?'BUILDER':s.magnetFrames>0?'MAGNET':s.monetized?'MONETIZED':'FREE';ui.cash.textContent=Math.floor(s.cash||0);ui.churn.textContent=Math.floor(s.churn||0);ui.reputation.textContent=Math.floor(s.reputation||0);ui.energy.textContent=Math.floor(s.energy||0);ui.mrr.textContent=Math.floor(s.mrr);ui.winMrr.textContent=winGoal();ui.cashChip.classList.toggle('hidden',!s.builder);ui.churnChip.classList.toggle('hidden',!s.builder);ui.repChip.classList.toggle('hidden',!s.builder);ui.energyChip.classList.toggle('hidden',!s.builder);ui.mrrChip.classList.toggle('hidden',!s.monetized);ui.winChip.classList.toggle('hidden',!s.monetized)}
 function notice(t){ui.notice.textContent=t;ui.notice.classList.remove('hidden');s.notice=110}
 function say(k,fallback){const list=feedback[k];notice(list?list[Math.floor(Math.random()*list.length)]:fallback)}
 function avatarStyle(){return avatarStyles[Math.floor(Math.random()*avatarStyles.length)]}
@@ -291,7 +319,7 @@ function move(d){if(!s.running||s.paused)return;const before=s.player.lane;s.pla
 function gainActivity(n){s.activity=Math.max(0,s.activity+Math.round(n*streakMult()))}
 function gainStreak(n=1){s.streak+=n}
 function resetStreak(){s.streak=0}
-function addMembers(n,engaged=true){const before=s.members;s.members=Math.max(1,s.members+n);const actual=s.members-before;if(actual>0&&engaged)gainStreak(actual);gainActivity(actual*10);if(s.monetized&&actual>0)addMRR(actual*30);else if(s.monetized&&actual<0)s.mrr=Math.max(0,s.mrr+actual*30);syncFollowers();notice((actual>0?'+':'')+actual+' members'+(streakMult()>1?' x'+streakMult():''));save()}
+function addMembers(n,engaged=true){const before=s.members;s.members=Math.max(1,s.members+n);const actual=s.members-before;if(actual>0&&engaged)gainStreak(actual);gainActivity(actual*10);if(s.builder&&actual>0){s.reputation=clamp(s.reputation+Math.min(3,actual),0,100);s.churn=clamp(s.churn-.15*actual,0,45)}if(s.builder&&actual<0){s.reputation=clamp(s.reputation+actual,0,100);s.churn=clamp(s.churn+1,0,45)}if(s.monetized&&actual>0)addMRR(actual*30);else if(s.monetized&&actual<0)s.mrr=Math.max(0,s.mrr+actual*30);syncFollowers();notice((actual>0?'+':'')+actual+' members'+(streakMult()>1?' x'+streakMult():''));save()}
 let swipeHintDismissed=false;
 function showSwipeHint(){swipeHintDismissed=false;ui.swipeHint.style.display=matchMedia('(max-width:720px)').matches?'block':'';ui.swipeHint.style.opacity='1';setTimeout(()=>{if(!swipeHintDismissed)ui.swipeHint.style.opacity='.7'},2500)}
 function hideSwipeHint(){swipeHintDismissed=true;ui.swipeHint.style.opacity='0';ui.swipeHint.style.display='none'}
@@ -351,7 +379,7 @@ if(!res.ok)throw new Error('Leaderboard request failed');
 renderLeaderboard(Array.isArray(data.entries)?data.entries:[],data.source);
 }catch(e){ui.leaderboardStatus.textContent='Leaderboard is only available in the Next/Vercel app.';ui.leaderboardList.innerHTML='<div class="emptyState">Use localhost:3000 or skool-game.vercel.app to test API scores.</div>';ui.leaderboardMeta.textContent='';console.warn('Leaderboard load failed',e)}
 }
-function addMRR(n,useStreak=true){const amount=n>0&&useStreak?Math.round(n*streakMult()):n;s.mrr=Math.max(0,s.mrr+amount);if(amount>0)say('mrr');if(s.mrr>=winGoal()&&!s.won){s.won=true;notice('🏆 You won the Skool Games!');s.paused=true;syncMusic();setTimeout(()=>{ui.pauseOverlay.querySelector('h1').textContent='YOU WON!';ui.pauseOverlay.classList.remove('hidden')},400)}}
+function addMRR(n,useStreak=true){const amount=n>0&&useStreak?Math.round(n*streakMult()):n;s.mrr=Math.max(0,s.mrr+amount);if(amount>0)say('mrr');if(s.mrr>=winGoal()&&!s.won){if(s.builder&&(s.churn>15||s.reputation<35||s.energy<=0)){notice('MRR is strong, but retention, reputation, or energy is not stable yet.');return}s.won=true;notice('You won the Skool Games!');s.paused=true;syncMusic();setTimeout(()=>{ui.pauseOverlay.querySelector('h1').textContent='YOU WON!';ui.pauseOverlay.classList.remove('hidden')},400)}}
 function spawn(){
 if(s.decision)return;
 const topY=roadTop+8;
@@ -367,27 +395,36 @@ s.objects.push({type,lane,y:topY,x:laneX(lane,topY),icon,count:type==='referral'
 function collect(o){
 if(o.hit)return;o.hit=true;
 if(o.type==='member'){sfx('member');addMembers(1);say('member')}
-else if(o.type==='post'){sfx('post');gainStreak();gainActivity(20);say('post')}
-else if(o.type==='flame'){sfx('flame');gainStreak();gainActivity(3);s.shield=Math.min(3,s.shield+1);say('flame')}
+else if(o.type==='post'){sfx('post');gainStreak();gainActivity(20);adjustBuilder({rep:1,energy:-1});say('post')}
+else if(o.type==='flame'){sfx('flame');gainStreak();gainActivity(3);adjustBuilder({churn:-1,rep:1});s.shield=Math.min(3,s.shield+1);say('flame')}
 else if(o.type==='magnet'){sfx('magnet');gainStreak();s.magnetFrames=600;s.shield=Math.min(3,s.shield+1);say('magnet')}
 else if(o.type==='boost'){sfx('boost');gainStreak();s.boost=true;s.boostFrames=600;s.boostSpawn=0;s.boostLane=Math.floor(Math.random()*3);s.boostLaneTimer=80;s.objects=s.objects.filter(x=>x===o||x.type==='member');say('boost')}
 else if(o.type==='referral'){sfx('referral');addMembers(o.count||3);say('referral')}
-else if(o.type==='trial'){sfx('money');addMembers(10);addMRR(300);notice('7-day free trial!')}
-else if(o.type==='highTicket'){sfx('money');gainStreak();addMRR(500);say('highTicket')}
-else if(o.type==='dollar'){sfx('money');gainStreak();addMRR(100);notice('+$100 MRR'+(streakMult()>1?' x'+streakMult():''))}
-else if(o.type==='spam'){if(Math.random()<.45){sfx('member');addMembers(1);notice('Good member!')}else{sfx('bad');s.activity=Math.floor(s.activity/2);resetStreak();say('spam')}}
-else if(o.type==='churn'){if(s.shield){sfx('flame');s.shield--}else{sfx('bad');resetStreak();const lost=Math.min(s.monetized?3:2,s.members-1);s.members-=lost;s.activity=Math.max(0,s.activity-lost*10);if(s.monetized)addMRR(-lost*30,false);syncFollowers();say('churn')}}
+else if(o.type==='trial'){sfx('money');addMembers(10);adjustBuilder({paid:2,cash:60,churn:2,rep:1});addMRR(300);notice('7-day free trial!')}
+else if(o.type==='highTicket'){sfx('money');gainStreak();adjustBuilder({cash:500,paid:1,energy:-4});addMRR(500);say('highTicket')}
+else if(o.type==='dollar'){sfx('money');gainStreak();adjustBuilder({cash:100});addMRR(100);notice('+$100 MRR'+(streakMult()>1?' x'+streakMult():''))}
+else if(o.type==='spam'){if(Math.random()<.45){sfx('member');addMembers(1);notice('Good member!')}else{sfx('bad');adjustBuilder({rep:-5,churn:2});s.activity=Math.floor(s.activity/2);resetStreak();say('spam')}}
+else if(o.type==='churn'){if(s.shield){sfx('flame');s.shield--;adjustBuilder({churn:-1})}else{sfx('bad');adjustBuilder({churn:4,rep:-3,energy:-3});resetStreak();const lost=Math.min(s.monetized?3:2,s.members-1);s.members-=lost;s.activity=Math.max(0,s.activity-lost*10);if(s.monetized)addMRR(-lost*30,false);syncFollowers();say('churn')}}
 while(s.activity>=goal(s.level)){s.level++;s.speed=(4.2+(s.level-1)*.85)*cat().f*diff().speed;notice('Level '+s.level+'!')}
 hud();save()
 }
+function builderDecision(){
+const stage=s.monetized?(Math.random()<.55?'retain':'convert'):(s.activity<300?'attract':Math.random()<.55?'convert':'retain');
+if(stage==='attract'){s.decision={kind:'builder',stage,y:roadTop+20,left:{lane:0,label:'FREE CHALLENGE',fx:{members:4,cash:-40,rep:3,energy:-7,activity:25}},right:{lane:2,label:'PAID ADS',fx:{members:7,cash:-160,rep:-1,energy:-3,activity:15}}};ui.decisionText.textContent='ATTRACT MEMBERS: quality or volume?'}
+else if(stage==='convert'){s.decision={kind:'builder',stage,y:roadTop+20,left:{lane:0,label:'STARTER OFFER',fx:{paid:2,cash:98,rep:1,energy:-4,activity:15}},right:{lane:2,label:'PAYMENT PLAN',fx:{paid:3,cash:45,churn:2,rep:2,energy:-5,activity:10}}};ui.decisionText.textContent='CONVERT: choose the right way to say yes.'}
+else{s.decision={kind:'builder',stage,y:roadTop+20,left:{lane:0,label:'ONBOARDING',fx:{churn:-3,rep:4,energy:-8,cash:-35,activity:20}},right:{lane:2,label:'WEEKLY CALL',fx:{churn:-5,rep:6,energy:-16,cash:-20,activity:25}}};ui.decisionText.textContent='RETAIN: results keep members paying.'}
+ui.decisionText.classList.remove('hidden')
+}
 function decision(){
-if(s.activity>=500&&!s.offered&&!s.monetized){s.decision={kind:'mon',y:roadTop+20,left:{lane:0,label:'MONETIZE'},right:{lane:2,label:'DON’T'}};ui.decisionText.textContent='MONETIZE YOUR COMMUNITY?'}
+if(s.builder&&Math.random()<.72){builderDecision();return}
+if(s.activity>=500&&!s.offered&&!s.monetized){s.decision={kind:'mon',y:roadTop+20,left:{lane:0,label:'MONETIZE'},right:{lane:2,label:'DONâ€™T'}};ui.decisionText.textContent='MONETIZE YOUR COMMUNITY?'}
 else if(Math.random()<.35){s.decision={kind:'about',y:roadTop+20,left:{lane:0,label:'ADJUST ABOUT PAGE'},right:{lane:2,label:'MAKE NO ADJUSTMENTS'}};ui.decisionText.textContent='ABOUT PAGE DECISION'}
 else{const pairs=[[{label:'+1',n:1},{label:'-4',n:-4}],[{label:'x2',a:'double'},{label:'-20',n:-20}],[{label:'+10',n:10},{label:'HALF',a:'half'}]];const p=pairs[Math.floor(Math.random()*pairs.length)],swap=Math.random()<.5;s.decision={kind:'quick',y:roadTop+20,left:{lane:0,...(swap?p[1]:p[0])},right:{lane:2,...(swap?p[0]:p[1])}};ui.decisionText.textContent='FAST DECISION'}
 ui.decisionText.classList.remove('hidden')
 }
 function resolve(c){
 if(s.decision.kind==='mon'){if(c.label==='MONETIZE'){s.monetized=true;notice('Community monetized!')}else notice('Community stays free');s.offered=true}
+else if(s.decision.kind==='builder'){if(c.fx.members)addMembers(Math.round(c.fx.members*builderProfile().audience.quality));adjustBuilder({cash:c.fx.cash||0,churn:c.fx.churn||0,rep:c.fx.rep||0,energy:c.fx.energy||0,paid:c.fx.paid||0,activity:c.fx.activity||0});showLearning(s.decision.stage)}
 else if(s.decision.kind==='about'){const n=Math.random()<.5?(c.label.startsWith('ADJUST')?10:4):(c.label.startsWith('ADJUST')?-10:-4);addMembers(n)}
 else if(c.a==='double')addMembers(s.members);else if(c.a==='half')addMembers(-Math.max(1,Math.floor(s.members/2)));else addMembers(c.n);
 s.decision=null;ui.decisionText.classList.add('hidden');s.decisionCooldown=320+Math.random()*350;hud()
@@ -409,19 +446,19 @@ function px(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),
 function roadDraw(){ctx.fillStyle='#cfeaf7';ctx.fillRect(0,0,W,H);ctx.fillStyle='#9fdb96';ctx.fillRect(0,roadTop,W,H-roadTop);ctx.beginPath();ctx.moveTo(road.bl,roadBottom);ctx.lineTo(road.tl,roadTop);ctx.lineTo(road.tr,roadTop);ctx.lineTo(road.br,roadBottom);ctx.closePath();ctx.fillStyle='#3b4655';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=12;ctx.stroke();ctx.strokeStyle='#071426';ctx.lineWidth=4;ctx.stroke();ctx.save();ctx.clip();for(let d=1;d<=2;d++)for(let y=roadTop+18+s.offset;y<H;y+=72){const b1=bounds(y),b2=bounds(y+34),x1=b1.l+(b1.r-b1.l)*d/3,x2=b2.l+(b2.r-b2.l)*d/3;ctx.strokeStyle='#fff';ctx.lineWidth=4+10*(y-roadTop)/(roadBottom-roadTop);ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y+34);ctx.stroke()}ctx.restore()}
 function runner(x,y,sc=.8,shirt='#2f61ff',icon='',style={}){const z=Math.sin(s.time*.28),hair=style.hair||'#3b241a';ctx.globalAlpha=.2;px(x-16*sc,y+28*sc,32*sc,7*sc,'#071426');ctx.globalAlpha=1;px(x-10*sc,y+10*sc,8*sc,(17+z*4)*sc,'#071426');px(x+2*sc,y+10*sc,8*sc,(17-z*4)*sc,'#071426');px(x-14*sc,y-10*sc,28*sc,25*sc,style.shirt||shirt);px(x-20*sc,y-5*sc,7*sc,19*sc,'#f0b58f');px(x+13*sc,y-5*sc,7*sc,19*sc,'#f0b58f');px(x-11*sc,y-27*sc,22*sc,19*sc,'#f0b58f');px(x-13*sc,y-32*sc,26*sc,11*sc,hair);if(style.longHair){px(x-16*sc,y-24*sc,7*sc,25*sc,hair);px(x+9*sc,y-24*sc,7*sc,25*sc,hair)}if(icon){ctx.font=Math.max(12,18*sc)+'px sans-serif';ctx.textAlign='center';ctx.fillText(icon,x,y+7*sc)}}
 function followers(){const vis=Math.min(28,s.followers.length);for(let i=0;i<vis;i++){const row=Math.floor(i/5),col=i%5,count=Math.min(5,vis-row*5),y=s.player.y+66+row*42,off=(col-(count-1)/2)*38,b=bounds(y),x=Math.max(b.l+18,Math.min(b.r-18,s.player.x+off));runner(x,y,.55,s.followers[i].style?.shirt||'#43b8f4',cat().icons[s.followers[i].icon],s.followers[i].style)}}
-function postIcon(x,y){ctx.globalAlpha=.18;ctx.beginPath();ctx.arc(x,y,36,0,Math.PI*2);ctx.fillStyle='#2f61ff';ctx.fill();ctx.globalAlpha=1;px(x-24,y-29,48,58,'#fff');px(x-24,y-29,48,8,'#2f61ff');px(x-15,y-12,30,5,'#071426');px(x-15,y,23,5,'#071426');px(x-15,y+12,30,5,'#071426');ctx.fillStyle='#ffc83d';ctx.font='24px sans-serif';ctx.textAlign='center';ctx.fillText('✎',x+15,y+26)}
-function flameIcon(x,y){ctx.globalAlpha=.22;ctx.beginPath();ctx.arc(x,y,38,0,Math.PI*2);ctx.fillStyle='#ff493b';ctx.fill();ctx.globalAlpha=1;ctx.font='48px sans-serif';ctx.textAlign='center';ctx.fillText('🔥',x,y+18);ctx.strokeStyle='#071426';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,31,0,Math.PI*2);ctx.stroke()}
+function postIcon(x,y){ctx.globalAlpha=.18;ctx.beginPath();ctx.arc(x,y,36,0,Math.PI*2);ctx.fillStyle='#2f61ff';ctx.fill();ctx.globalAlpha=1;px(x-24,y-29,48,58,'#fff');px(x-24,y-29,48,8,'#2f61ff');px(x-15,y-12,30,5,'#071426');px(x-15,y,23,5,'#071426');px(x-15,y+12,30,5,'#071426');ctx.fillStyle='#ffc83d';ctx.font='24px sans-serif';ctx.textAlign='center';ctx.fillText('âœŽ',x+15,y+26)}
+function flameIcon(x,y){ctx.globalAlpha=.22;ctx.beginPath();ctx.arc(x,y,38,0,Math.PI*2);ctx.fillStyle='#ff493b';ctx.fill();ctx.globalAlpha=1;ctx.font='48px sans-serif';ctx.textAlign='center';ctx.fillText('ðŸ”¥',x,y+18);ctx.strokeStyle='#071426';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,31,0,Math.PI*2);ctx.stroke()}
 function magnetIcon(x,y){ctx.beginPath();ctx.arc(x,y,32,0,Math.PI*2);ctx.fillStyle='#9b6cff';ctx.fill();ctx.strokeStyle='#071426';ctx.lineWidth=5;ctx.stroke();ctx.fillStyle='#fff';ctx.font='900 30px sans-serif';ctx.textAlign='center';ctx.fillText('U',x,y+11)}
 function referralIcon(o){runner(o.x-18,o.y,.55,'#2fd16f',cat().icons[o.icon],o.styles?.[0]);runner(o.x+18,o.y,.55,'#ffc83d',cat().icons[(o.icon+1)%cat().icons.length],o.styles?.[1]);ctx.fillStyle='#071426';ctx.font='900 14px monospace';ctx.textAlign='center';ctx.fillText('x'+(o.count||3),o.x,o.y+38)}
 function highTicketIcon(x,y){ctx.beginPath();ctx.arc(x,y,34,0,Math.PI*2);ctx.fillStyle='#ffc83d';ctx.fill();ctx.strokeStyle='#071426';ctx.lineWidth=5;ctx.stroke();ctx.fillStyle='#071426';ctx.font='900 14px monospace';ctx.textAlign='center';ctx.fillText('HIGH',x,y-4);ctx.fillText('$500',x,y+13)}
-function object(o){if(o.type==='member'||o.type==='spam'){runner(o.x,o.y,.76,o.style?.shirt||'#43b8f4',cat().icons[o.icon],o.style);if(o.type==='spam'){px(o.x+22,o.y-38,18,28,'#ff493b');px(o.x+28,o.y-31,6,14,'#fff');px(o.x+28,o.y-11,6,6,'#fff')}}else if(o.type==='post'){postIcon(o.x,o.y)}else if(o.type==='flame'){flameIcon(o.x,o.y)}else if(o.type==='magnet'){magnetIcon(o.x,o.y)}else if(o.type==='referral'){referralIcon(o)}else if(o.type==='highTicket'){highTicketIcon(o.x,o.y)}else if(o.type==='boost'){ctx.font='44px sans-serif';ctx.textAlign='center';ctx.fillText('🚀',o.x,o.y)}else if(o.type==='trial'){px(o.x-42,o.y-26,84,52,'#fff');ctx.fillStyle='#071426';ctx.font='900 12px monospace';ctx.textAlign='center';ctx.fillText('7-DAY FREE',o.x,o.y);ctx.fillText('TRIAL',o.x,o.y+16)}else if(o.type==='dollar'){ctx.beginPath();ctx.arc(o.x,o.y,30,0,Math.PI*2);ctx.fillStyle='#2fd16f';ctx.fill();ctx.strokeStyle='#071426';ctx.lineWidth=5;ctx.stroke();ctx.fillStyle='#fff';ctx.font='900 34px monospace';ctx.textAlign='center';ctx.fillText('$',o.x,o.y+11)}else{px(o.x-42,o.y-20,84,40,'#ff493b');ctx.fillStyle='#fff';ctx.font='900 16px monospace';ctx.textAlign='center';ctx.fillText('CHURN',o.x,o.y+6)}}
+function object(o){if(o.type==='member'||o.type==='spam'){runner(o.x,o.y,.76,o.style?.shirt||'#43b8f4',cat().icons[o.icon],o.style);if(o.type==='spam'){px(o.x+22,o.y-38,18,28,'#ff493b');px(o.x+28,o.y-31,6,14,'#fff');px(o.x+28,o.y-11,6,6,'#fff')}}else if(o.type==='post'){postIcon(o.x,o.y)}else if(o.type==='flame'){flameIcon(o.x,o.y)}else if(o.type==='magnet'){magnetIcon(o.x,o.y)}else if(o.type==='referral'){referralIcon(o)}else if(o.type==='highTicket'){highTicketIcon(o.x,o.y)}else if(o.type==='boost'){ctx.font='44px sans-serif';ctx.textAlign='center';ctx.fillText('ðŸš€',o.x,o.y)}else if(o.type==='trial'){px(o.x-42,o.y-26,84,52,'#fff');ctx.fillStyle='#071426';ctx.font='900 12px monospace';ctx.textAlign='center';ctx.fillText('7-DAY FREE',o.x,o.y);ctx.fillText('TRIAL',o.x,o.y+16)}else if(o.type==='dollar'){ctx.beginPath();ctx.arc(o.x,o.y,30,0,Math.PI*2);ctx.fillStyle='#2fd16f';ctx.fill();ctx.strokeStyle='#071426';ctx.lineWidth=5;ctx.stroke();ctx.fillStyle='#fff';ctx.font='900 34px monospace';ctx.textAlign='center';ctx.fillText('$',o.x,o.y+11)}else{px(o.x-42,o.y-20,84,40,'#ff493b');ctx.fillStyle='#fff';ctx.font='900 16px monospace';ctx.textAlign='center';ctx.fillText('CHURN',o.x,o.y+6)}}
 function decisionDraw(){if(!s.decision)return;for(const c of[s.decision.left,s.decision.right]){const x=laneX(c.lane,s.decision.y),y=s.decision.y;ctx.beginPath();ctx.arc(x,y,44,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle='#071426';ctx.lineWidth=5;ctx.stroke();ctx.fillStyle=(c.n>0||c.a==='double'||c.label==='MONETIZE')?'#2fd16f':'#ff493b';ctx.textAlign='center';ctx.font=c.label.length>10?'900 8px monospace':'900 18px monospace';if(c.label==='ADJUST ABOUT PAGE'){ctx.fillText('ADJUST',x,y-4);ctx.fillText('ABOUT PAGE',x,y+10)}else if(c.label==='MAKE NO ADJUSTMENTS'){ctx.fillText('MAKE NO',x,y-5);ctx.fillText('ADJUSTMENTS',x,y+10)}else ctx.fillText(c.label,x,y+6)}}
-function draw(){roadDraw();s.objects.forEach(object);decisionDraw();followers();runner(s.player.x,s.player.y,1,'#071426','⭐');if(s.shield){ctx.strokeStyle='#ffc83d';ctx.lineWidth=5;ctx.beginPath();ctx.arc(s.player.x,s.player.y,45,0,Math.PI*2);ctx.stroke()}}
+function draw(){roadDraw();s.objects.forEach(object);decisionDraw();followers();runner(s.player.x,s.player.y,1,'#071426','â­');if(s.shield){ctx.strokeStyle='#ffc83d';ctx.lineWidth=5;ctx.beginPath();ctx.arc(s.player.x,s.player.y,45,0,Math.PI*2);ctx.stroke()}}
 function loop(){update();draw();requestAnimationFrame(loop)}
-function info(){const c=cats[ui.category.value],d=diffs[ui.difficulty.value],target=Math.round(d.base*c.m/100)*100;ui.categoryInfo.innerHTML=`<strong>${c.name}</strong><br>${c.desc}<br>Win target: $${target} MRR`}
+function info(){const c=cats[ui.category.value],d=diffs[ui.difficulty.value],target=Math.round(d.base*c.m/100)*100,bp=builderProfile();ui.categoryInfo.innerHTML=`<strong>${c.name}</strong><br>${c.desc}<br>Win target: $${target} MRR`;ui.builderFields.classList.toggle('hidden',!isBuilderMode());ui.modeLesson.textContent=isBuilderMode()?'Community Builder: '+bp.audience.name+' solving "'+bp.problem.name+'" with '+bp.offer.name+'. Learn attract -> convert -> retain -> monetize -> reinvest.':'Arcade Mode: collect, avoid churn, monetize at 500 activity, and reach the MRR goal.'}
 const allCat=document.createElement('option');allCat.value='';allCat.textContent='All Categories';ui.leaderboardCategory.appendChild(allCat);
 populate();ui.category.value='hobbies';ui.settingsCategory.value='hobbies';ui.leaderboardCategory.value='';ui.playerName.value=localStorage.getItem(PLAYER_NAME_KEY)||ui.playerName.value;info();profileInfo();reset();updateMusicButton();updateLeaderboardTabs();
-ui.category.onchange=()=>{info();profileInfo()};ui.difficulty.onchange=()=>{info();profileInfo()};ui.playerName.oninput=()=>{localStorage.setItem(PLAYER_NAME_KEY,ui.playerName.value.trim().replace(/\s+/g,' ').slice(0,18)||'Player');profileInfo()};ui.playerName.onchange=playerName;ui.leaderboardCategory.onchange=()=>{leaderboardScope='global';updateLeaderboardTabs();loadLeaderboard()};ui.leaderboardDifficulty.onchange=()=>{leaderboardScope='global';updateLeaderboardTabs();loadLeaderboard()};
+ui.category.onchange=()=>{info();profileInfo()};ui.difficulty.onchange=()=>{info();profileInfo()};ui.gameMode.onchange=info;ui.audience.onchange=info;ui.problem.onchange=info;ui.firstOffer.onchange=info;ui.playerName.oninput=()=>{localStorage.setItem(PLAYER_NAME_KEY,ui.playerName.value.trim().replace(/\s+/g,' ').slice(0,18)||'Player');profileInfo()};ui.playerName.onchange=playerName;ui.leaderboardCategory.onchange=()=>{leaderboardScope='global';updateLeaderboardTabs();loadLeaderboard()};ui.leaderboardDifficulty.onchange=()=>{leaderboardScope='global';updateLeaderboardTabs();loadLeaderboard()};
 document.querySelectorAll('[data-leader-scope]').forEach(b=>b.onclick=()=>setLeaderboardScope(b.dataset.leaderScope));
 $('startBtn').onclick=start;$('pauseBtn').onclick=()=>pause();$('resumeBtn').onclick=()=>pause(true);$('leftBtn').onpointerdown=()=>move(-1);$('rightBtn').onpointerdown=()=>move(1);
 $('playAgainBtn').onclick=start;$('viewLeaderboardBtn').onclick=()=>{ui.winOverlay.classList.add('hidden');ui.leaderboardOverlay.classList.remove('hidden');setLeaderboardScope('global')};

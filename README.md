@@ -20,6 +20,11 @@ Open `http://localhost:3000`.
 ## Current prototype notes
 
 - The Canvas prototype is served from `public/game/index.html`.
+- The start screen offers Arcade Mode and Community Builder Mode.
+- Community Builder Mode adds audience, problem, and first-offer choices before the run starts.
+- Community Builder Mode teaches the loop: attract members, convert them, retain them, monetize, reinvest, and grow faster.
+- Builder decisions affect cash, churn, reputation, founder energy, paid members, activity, members, and MRR.
+- Builder wins require a healthier business, not only enough MRR: retention, reputation, and founder energy must stay stable.
 - Custom background music is loaded from `public/audio/SKOOL GAME.wav` after the player starts a run.
 - The music button toggles background music plus generated WebAudio sound effects and stores that preference locally.
 - Generated sound effects play for lane movement, collectibles, MRR rewards, hazards, boosts, and wins.
