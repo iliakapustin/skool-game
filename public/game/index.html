@@ -216,7 +216,27 @@ music.loop=true;music.volume=.35;music.preload='auto';
 let musicMuted=localStorage.getItem('skoolGameMusicMuted')==='true';
 function updateMusicButton(){const b=$('musicBtn');if(b)b.textContent=musicMuted?'M':'♫'}
 function syncMusic(){if(musicMuted||!s?.running||s.paused){music.pause();return}music.play().catch(()=>{})}
-function toggleMusic(){musicMuted=!musicMuted;localStorage.setItem('skoolGameMusicMuted',String(musicMuted));updateMusicButton();syncMusic()}
+function toggleMusic(){musicMuted=!musicMuted;localStorage.setItem('skoolGameMusicMuted',String(musicMuted));updateMusicButton();if(!musicMuted)unlockAudio();syncMusic()}
+let audioCtx=null,lastSfxAt=0;
+function unlockAudio(){try{if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{})}catch(e){}}
+function tone(freq,dur=.08,type='square',vol=.08,delay=0){
+if(musicMuted||!audioCtx)return;
+const now=audioCtx.currentTime+delay,osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+osc.type=type;osc.frequency.setValueAtTime(freq,now);gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(vol,now+.01);gain.gain.exponentialRampToValueAtTime(.0001,now+dur);
+osc.connect(gain);gain.connect(audioCtx.destination);osc.start(now);osc.stop(now+dur+.02);
+}
+function sfx(name){
+if(musicMuted)return;unlockAudio();
+const now=performance.now();if(name!=='win'&&now-lastSfxAt<28)return;lastSfxAt=now;
+if(name==='move')tone(180,.035,'square',.025);
+else if(name==='member'){tone(520,.055,'square',.055);tone(700,.06,'square',.045,.055)}
+else if(name==='post'){tone(440,.045,'triangle',.045);tone(660,.05,'triangle',.04,.04)}
+else if(name==='flame'){tone(760,.05,'sawtooth',.05);tone(1040,.07,'triangle',.045,.045)}
+else if(name==='boost'||name==='magnet'||name==='referral'){tone(500,.05,'square',.055);tone(740,.055,'square',.05,.055);tone(980,.075,'triangle',.045,.115)}
+else if(name==='money'){tone(880,.055,'triangle',.055);tone(1180,.075,'triangle',.05,.06)}
+else if(name==='bad'){tone(220,.09,'sawtooth',.055);tone(130,.12,'sawtooth',.045,.07)}
+else if(name==='win'){tone(520,.12,'square',.07);tone(660,.12,'square',.065,.12);tone(780,.14,'square',.065,.24);tone(1040,.22,'triangle',.06,.38)}
+}
 const cats={
 hobbies:{name:'Hobbies',f:.78,m:1,icons:['🎸','🎹','⚽','🎨','📷'],desc:'Lower competition.'},
 music:{name:'Music',f:.88,m:1.1,icons:['🎸','🎹','🥁','🎤','🎧'],desc:'Creative, moderate competition.'},
@@ -261,7 +281,7 @@ function notice(t){ui.notice.textContent=t;ui.notice.classList.remove('hidden');
 function say(k,fallback){const list=feedback[k];notice(list?list[Math.floor(Math.random()*list.length)]:fallback)}
 function avatarStyle(){return avatarStyles[Math.floor(Math.random()*avatarStyles.length)]}
 function syncFollowers(){while(s.followers.length<s.members-1)s.followers.push({icon:Math.floor(Math.random()*cat().icons.length),phase:Math.random()*30,style:avatarStyle()});s.followers.length=Math.max(0,s.members-1)}
-function move(d){if(!s.running||s.paused)return;s.player.lane=Math.max(0,Math.min(2,s.player.lane+d));s.player.tx=laneX(s.player.lane,s.player.y)}
+function move(d){if(!s.running||s.paused)return;const before=s.player.lane;s.player.lane=Math.max(0,Math.min(2,s.player.lane+d));s.player.tx=laneX(s.player.lane,s.player.y);if(s.player.lane!==before)sfx('move')}
 function gainActivity(n){s.activity=Math.max(0,s.activity+Math.round(n*streakMult()))}
 function gainStreak(n=1){s.streak+=n}
 function resetStreak(){s.streak=0}
@@ -269,11 +289,11 @@ function addMembers(n,engaged=true){const before=s.members;s.members=Math.max(1,
 let swipeHintDismissed=false;
 function showSwipeHint(){swipeHintDismissed=false;ui.swipeHint.style.display=matchMedia('(max-width:720px)').matches?'block':'';ui.swipeHint.style.opacity='1';setTimeout(()=>{if(!swipeHintDismissed)ui.swipeHint.style.opacity='.7'},2500)}
 function hideSwipeHint(){swipeHintDismissed=true;ui.swipeHint.style.opacity='0';ui.swipeHint.style.display='none'}
-function start(){reset();s.running=true;s.runStartTime=performance.now();s.scoreSubmitted=false;ui.pauseOverlay.querySelector('h1').textContent='PAUSED';ui.startOverlay.classList.add('hidden');ui.pauseOverlay.classList.add('hidden');ui.winOverlay.classList.add('hidden');ui.settingsOverlay.classList.add('hidden');ui.leaderboardOverlay.classList.add('hidden');showSwipeHint();syncMusic()}
+function start(){reset();s.running=true;s.runStartTime=performance.now();s.scoreSubmitted=false;ui.pauseOverlay.querySelector('h1').textContent='PAUSED';ui.startOverlay.classList.add('hidden');ui.pauseOverlay.classList.add('hidden');ui.winOverlay.classList.add('hidden');ui.settingsOverlay.classList.add('hidden');ui.leaderboardOverlay.classList.add('hidden');showSwipeHint();unlockAudio();syncMusic()}
 function pause(force=false){if(!s.running)return;s.paused=force?false:!s.paused;ui.pauseOverlay.classList.toggle('hidden',!s.paused);syncMusic()}
 function localScore(){const duration=Math.max(5000,Math.floor(performance.now()-(s.runStartTime||performance.now())));return Math.max(0,Math.floor(s.activity)+s.members*25+Math.floor(s.mrr)*2+s.level*250+(s.won?50000:0)+(s.monetized?5000:0)-Math.floor(duration/1000))}
 function showWinSummary(){
-s.winShown=true;s.paused=true;syncMusic();ui.pauseOverlay.classList.add('hidden');ui.winOverlay.classList.remove('hidden');
+s.winShown=true;s.paused=true;sfx('win');syncMusic();ui.pauseOverlay.classList.add('hidden');ui.winOverlay.classList.remove('hidden');
 ui.winSummaryMrr.textContent='$'+Math.floor(s.mrr);ui.winSummaryScore.textContent=localScore();ui.winSummaryRank.textContent='...';ui.winSummaryActivity.textContent=Math.floor(s.activity);ui.winSummaryMembers.textContent=s.members;ui.winSummaryMode.textContent=shortCategory(s.category)+' / '+s.difficulty;ui.winSubmitStatus.textContent='Saving score...';
 }
 async function updateWinRank(){
@@ -339,17 +359,17 @@ s.objects.push({type,lane,y:topY,x:laneX(lane,topY),icon,count:type==='referral'
 }
 function collect(o){
 if(o.hit)return;o.hit=true;
-if(o.type==='member'){addMembers(1);say('member')}
-else if(o.type==='post'){gainStreak();gainActivity(20);say('post')}
-else if(o.type==='flame'){gainStreak();gainActivity(3);s.shield=Math.min(3,s.shield+1);say('flame')}
-else if(o.type==='magnet'){gainStreak();s.magnetFrames=600;s.shield=Math.min(3,s.shield+1);say('magnet')}
-else if(o.type==='boost'){gainStreak();s.boost=true;s.boostFrames=600;s.boostSpawn=0;s.boostLane=Math.floor(Math.random()*3);s.boostLaneTimer=80;s.objects=s.objects.filter(x=>x===o||x.type==='member');say('boost')}
-else if(o.type==='referral'){addMembers(o.count||3);say('referral')}
-else if(o.type==='trial'){addMembers(10);addMRR(300);notice('7-day free trial!')}
-else if(o.type==='highTicket'){gainStreak();addMRR(500);say('highTicket')}
-else if(o.type==='dollar'){gainStreak();addMRR(100);notice('+$100 MRR'+(streakMult()>1?' x'+streakMult():''))}
-else if(o.type==='spam'){if(Math.random()<.45){addMembers(1);notice('Good member!')}else{s.activity=Math.floor(s.activity/2);resetStreak();say('spam')}}
-else if(o.type==='churn'){if(s.shield)s.shield--;else{resetStreak();const lost=Math.min(s.monetized?3:2,s.members-1);s.members-=lost;s.activity=Math.max(0,s.activity-lost*10);if(s.monetized)addMRR(-lost*30,false);syncFollowers();say('churn')}}
+if(o.type==='member'){sfx('member');addMembers(1);say('member')}
+else if(o.type==='post'){sfx('post');gainStreak();gainActivity(20);say('post')}
+else if(o.type==='flame'){sfx('flame');gainStreak();gainActivity(3);s.shield=Math.min(3,s.shield+1);say('flame')}
+else if(o.type==='magnet'){sfx('magnet');gainStreak();s.magnetFrames=600;s.shield=Math.min(3,s.shield+1);say('magnet')}
+else if(o.type==='boost'){sfx('boost');gainStreak();s.boost=true;s.boostFrames=600;s.boostSpawn=0;s.boostLane=Math.floor(Math.random()*3);s.boostLaneTimer=80;s.objects=s.objects.filter(x=>x===o||x.type==='member');say('boost')}
+else if(o.type==='referral'){sfx('referral');addMembers(o.count||3);say('referral')}
+else if(o.type==='trial'){sfx('money');addMembers(10);addMRR(300);notice('7-day free trial!')}
+else if(o.type==='highTicket'){sfx('money');gainStreak();addMRR(500);say('highTicket')}
+else if(o.type==='dollar'){sfx('money');gainStreak();addMRR(100);notice('+$100 MRR'+(streakMult()>1?' x'+streakMult():''))}
+else if(o.type==='spam'){if(Math.random()<.45){sfx('member');addMembers(1);notice('Good member!')}else{sfx('bad');s.activity=Math.floor(s.activity/2);resetStreak();say('spam')}}
+else if(o.type==='churn'){if(s.shield){sfx('flame');s.shield--}else{sfx('bad');resetStreak();const lost=Math.min(s.monetized?3:2,s.members-1);s.members-=lost;s.activity=Math.max(0,s.activity-lost*10);if(s.monetized)addMRR(-lost*30,false);syncFollowers();say('churn')}}
 while(s.activity>=goal(s.level)){s.level++;s.speed=(4.2+(s.level-1)*.85)*cat().f*diff().speed;notice('Level '+s.level+'!')}
 hud();save()
 }

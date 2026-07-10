@@ -21,7 +21,8 @@ Open `http://localhost:3000`.
 
 - The Canvas prototype is served from `public/game/index.html`.
 - Custom background music is loaded from `public/audio/SKOOL GAME.wav` after the player starts a run.
-- The music button toggles mute state and stores that preference locally.
+- The music button toggles background music plus generated WebAudio sound effects and stores that preference locally.
+- Generated sound effects play for lane movement, collectibles, MRR rewards, hazards, boosts, and wins.
 - Leaderboard-ready TypeScript models live in `src/game/leaderboardTypes.ts`.
 - Run submissions are validated server-side in `src/server/scoreValidation.ts`.
 - Mock API routes are available at `POST /api/runs` and `GET /api/leaderboard`.
