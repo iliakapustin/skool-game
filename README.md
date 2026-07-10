@@ -22,6 +22,9 @@ Open `http://localhost:3000`.
 - The Canvas prototype is served from `public/game/index.html`.
 - Custom background music is loaded from `public/audio/SKOOL GAME.wav` after the player starts a run.
 - The music button toggles mute state and stores that preference locally.
+- Leaderboard-ready TypeScript models live in `src/game/leaderboardTypes.ts`.
+- Run submissions are validated server-side in `src/server/scoreValidation.ts`.
+- Mock API routes are available at `POST /api/runs` and `GET /api/leaderboard`.
 - Desktop start/menu layout is kept compact so the start button is visible at 1280x720.
 - Settings cancel returns to gameplay when settings were opened during an active run.
 - Collectibles use clearer in-game visuals for posts and flames.
@@ -53,6 +56,27 @@ skool-game/
 ├── package.json
 └── .env.local
 ```
+
+## Online Safety Architecture
+
+- Never store private API keys or service-role keys in `public/` files or client-side code.
+- Keep `.env.local` private and out of GitHub.
+- Store production secrets only in Vercel Environment Variables.
+- Do not let the browser write trusted leaderboard rows directly.
+- Score submissions must go through server routes first.
+- Server routes validate category, difficulty, duration, activity, members, MRR, and win state before accepting a run.
+- Current leaderboard storage is an in-memory mock for architecture testing only.
+
+## Supabase Preparation
+
+Before adding Supabase:
+
+1. Keep the local API contract stable: `POST /api/runs` and `GET /api/leaderboard`.
+2. Create database tables for profiles, runs, and leaderboard views.
+3. Enable Row Level Security before public launch.
+4. Use the Supabase anon key only for safe client reads/auth flows.
+5. Use the Supabase service-role key only inside server-side API routes.
+6. Add rate limiting and stricter anti-cheat validation before accepting public leaderboard submissions.
 
 
 ## Continue with Codex
