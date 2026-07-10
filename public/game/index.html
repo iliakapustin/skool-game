@@ -43,6 +43,7 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
 .tabBtn.active{background:var(--yellow)}
 .leaderMeta{margin-top:8px;font-weight:900;color:var(--navy)}
 .profileInfo{border:3px solid var(--navy);background:#fff7d6;padding:8px;font-weight:900;text-align:left}
+.profileBest{border:3px solid var(--navy);background:#eafff1;padding:8px;font-weight:900;text-align:left;margin-top:8px}
 .summaryGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
 .summaryCard{border:3px solid var(--navy);background:#f4f8fc;padding:10px;font-weight:1000}
 .summaryCard small{display:block;margin-bottom:4px;color:#31445c}
@@ -126,6 +127,7 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
       <div class="info" id="categoryInfo"></div>
     </div>
     <div class="profileInfo" id="profileInfo"></div>
+    <div class="profileBest" id="profileBest"></div>
     <div class="legend">
       <div>👤 Member: +1 member, +10 activity; after monetization +$30 MRR.</div>
       <div>📝 Post: +20 activity.</div>
@@ -202,15 +204,19 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
 const $=id=>document.getElementById(id);
 const canvas=$('game'),ctx=canvas.getContext('2d'),shell=$('shell');
 ctx.imageSmoothingEnabled=false;
-const ui={level:$('level'),activity:$('activity'),goal:$('goal'),members:$('members'),streak:$('streak'),catHud:$('catHud'),modeHud:$('modeHud'),mrrChip:$('mrrChip'),winChip:$('winChip'),mrr:$('mrr'),winMrr:$('winMrr'),notice:$('notice'),decisionText:$('decisionText'),startOverlay:$('startOverlay'),pauseOverlay:$('pauseOverlay'),winOverlay:$('winOverlay'),winSubmitStatus:$('winSubmitStatus'),winSummaryMrr:$('winSummaryMrr'),winSummaryScore:$('winSummaryScore'),winSummaryRank:$('winSummaryRank'),winSummaryActivity:$('winSummaryActivity'),winSummaryMembers:$('winSummaryMembers'),winSummaryMode:$('winSummaryMode'),settingsOverlay:$('settingsOverlay'),leaderboardOverlay:$('leaderboardOverlay'),leaderboardStatus:$('leaderboardStatus'),leaderboardList:$('leaderboardList'),leaderboardMeta:$('leaderboardMeta'),leaderboardCategory:$('leaderboardCategory'),leaderboardDifficulty:$('leaderboardDifficulty'),category:$('category'),difficulty:$('difficulty'),settingsCategory:$('settingsCategory'),settingsDifficulty:$('settingsDifficulty'),categoryInfo:$('categoryInfo'),profileInfo:$('profileInfo'),playerName:$('playerName'),swipeHint:$('swipeHint')};
-const GAME_VERSION='0.12.0-canvas-audio';
+const ui={level:$('level'),activity:$('activity'),goal:$('goal'),members:$('members'),streak:$('streak'),catHud:$('catHud'),modeHud:$('modeHud'),mrrChip:$('mrrChip'),winChip:$('winChip'),mrr:$('mrr'),winMrr:$('winMrr'),notice:$('notice'),decisionText:$('decisionText'),startOverlay:$('startOverlay'),pauseOverlay:$('pauseOverlay'),winOverlay:$('winOverlay'),winSubmitStatus:$('winSubmitStatus'),winSummaryMrr:$('winSummaryMrr'),winSummaryScore:$('winSummaryScore'),winSummaryRank:$('winSummaryRank'),winSummaryActivity:$('winSummaryActivity'),winSummaryMembers:$('winSummaryMembers'),winSummaryMode:$('winSummaryMode'),settingsOverlay:$('settingsOverlay'),leaderboardOverlay:$('leaderboardOverlay'),leaderboardStatus:$('leaderboardStatus'),leaderboardList:$('leaderboardList'),leaderboardMeta:$('leaderboardMeta'),leaderboardCategory:$('leaderboardCategory'),leaderboardDifficulty:$('leaderboardDifficulty'),category:$('category'),difficulty:$('difficulty'),settingsCategory:$('settingsCategory'),settingsDifficulty:$('settingsDifficulty'),categoryInfo:$('categoryInfo'),profileInfo:$('profileInfo'),profileBest:$('profileBest'),playerName:$('playerName'),swipeHint:$('swipeHint')};
+const GAME_VERSION='0.12.1-canvas-profile';
 const PLAYER_ID_KEY='skoolGamePlayerId';
 const PLAYER_NAME_KEY='skoolGamePlayerName';
+const PLAYER_BEST_KEY='skoolGameBestRun';
 let leaderboardScope='global';
 function playerId(){let id=localStorage.getItem(PLAYER_ID_KEY);if(!id){id='local-'+(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2));localStorage.setItem(PLAYER_ID_KEY,id)}return id}
 function profileCode(){return playerId().replace(/^local-/,'').slice(0,8).toUpperCase()}
 function playerName(){const name=ui.playerName.value.trim().replace(/\s+/g,' ').slice(0,18)||'Player';ui.playerName.value=name;localStorage.setItem(PLAYER_NAME_KEY,name);profileInfo();return name}
-function profileInfo(){if(ui.profileInfo)ui.profileInfo.textContent='Profile: '+profileCode()+' | Name: '+(ui.playerName.value.trim()||'Player')}
+function readBestRun(){try{return JSON.parse(localStorage.getItem(PLAYER_BEST_KEY)||'null')}catch(e){return null}}
+function bestRunLabel(best){return best?'Best run: '+Math.floor(best.score||0)+' score | $'+Math.floor(best.mrr||0)+' MRR | '+shortCategory(best.category)+' / '+best.difficulty+(best.rank?' | Best rank #'+best.rank:''):'Best run: win once to set your first leaderboard score.'}
+function profileInfo(){const name=ui.playerName.value.trim().replace(/\s+/g,' ').slice(0,18)||'Player';if(ui.profileInfo)ui.profileInfo.textContent='Profile '+profileCode()+' | '+name;if(ui.profileBest)ui.profileBest.textContent=bestRunLabel(readBestRun())}
+function updateBestRun(run,rank){if(!run)return;const old=readBestRun();const score=Math.floor(run.score||0);if(!old||score>=Math.floor(old.score||0)){localStorage.setItem(PLAYER_BEST_KEY,JSON.stringify({score,mrr:Math.floor(run.mrr||0),activity:Math.floor(run.activity||0),members:Math.floor(run.members||0),category:run.category,difficulty:run.difficulty,rank:rank||run.rank||null,submittedAt:run.submittedAt||new Date().toISOString()}));profileInfo()}}
 const music=new Audio('/audio/SKOOL%20GAME.wav');
 music.loop=true;music.volume=.35;music.preload='auto';
 let musicMuted=localStorage.getItem('skoolGameMusicMuted')==='true';
@@ -301,7 +307,7 @@ try{
 const res=await fetch('/api/leaderboard?limit=100',{headers:{'Accept':'application/json'}});
 const data=await res.json();
 const mine=(data.entries||[]).find(e=>e.playerId===playerId());
-if(mine){ui.winSummaryRank.textContent='#'+mine.rank;ui.winSubmitStatus.textContent='Score saved. You are rank #'+mine.rank+'.'}else ui.winSubmitStatus.textContent='Score saved. Open leaderboard to see your rank.';
+if(mine){ui.winSummaryRank.textContent='#'+mine.rank;ui.winSubmitStatus.textContent=mine.rank===1?'Score saved. You are #1 on this board!':'Score saved. You are rank #'+mine.rank+'.';updateBestRun(mine,mine.rank)}else{updateBestRun(s.submittedRun,null);ui.winSubmitStatus.textContent='Score saved. Open leaderboard to see your rank.'}
 }catch(e){ui.winSubmitStatus.textContent='Score saved. Rank will update in leaderboard.'}
 }
 async function submitRun(reason){
@@ -312,7 +318,7 @@ try{
 const res=await fetch('/api/runs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({playerId:playerId(),displayName:s.name,category:s.category,difficulty:s.difficulty,activity:Math.floor(s.activity),members:s.members,mrr:Math.floor(s.mrr),level:s.level,durationMs,monetized:s.monetized,won:s.won,gameVersion:GAME_VERSION})});
 const data=await res.json().catch(()=>({}));
 if(!res.ok)throw new Error((data.errors||['Score was not accepted.']).join(' '));
-s.submittedRun=data.run||null;if(s.submittedRun?.score)ui.winSummaryScore.textContent=s.submittedRun.score;
+s.submittedRun=data.run||null;if(s.submittedRun?.score){ui.winSummaryScore.textContent=s.submittedRun.score;updateBestRun(s.submittedRun,null)}
 notice(reason==='win'?'Score saved to leaderboard!':'Run saved!');
 if(reason==='win')updateWinRank();
 }catch(e){if(reason==='win')ui.winSubmitStatus.textContent='Score save failed. Your run summary is still shown.';notice('Score save failed. Try again later.');console.warn('Run submit failed',e)}
@@ -326,8 +332,9 @@ ui.leaderboardList.innerHTML='';
 ui.leaderboardMeta.textContent=source==='mock'?'Mock leaderboard - Supabase will make it permanent.':'Live leaderboard';
 if(!entries.length){ui.leaderboardStatus.textContent='No scores yet. Win a run to become #1.';return}
 const me=playerId(),mine=entries.find(e=>e.playerId===me);
+if(mine)updateBestRun(mine,mine.rank);
 const mode=leaderboardScope==='global'?'Global':leaderboardScope==='category'?'My Category':'My Difficulty';
-ui.leaderboardStatus.textContent=(mine?'Your rank: #'+mine.rank+' | ':'')+mode+' Top '+entries.length;
+ui.leaderboardStatus.textContent=(mine?(mine.rank===1?'You are #1 | ':'Your rank: #'+mine.rank+' | '):'No saved rank in this view yet | ')+mode+' Top '+entries.length;
 ui.leaderboardList.innerHTML='<div class="leaderRow head"><span>#</span><span>PLAYER</span><span>MRR</span><span>SCORE</span><span>MODE</span></div>'+entries.map(e=>`<div class="leaderRow ${e.playerId===me?'me':''}"><span>${e.rank}</span><span>${cleanText(e.displayName)}${e.playerId===me?' (YOU)':''}<br><small>${cleanText(shortCategory(e.category))}</small></span><span>$${Math.floor(e.mrr||0)}</span><span>${Math.floor(e.score||0)}</span><span>${cleanText(e.difficulty||'')}</span></div>`).join('');
 }
 async function loadLeaderboard(){
@@ -414,7 +421,7 @@ function loop(){update();draw();requestAnimationFrame(loop)}
 function info(){const c=cats[ui.category.value],d=diffs[ui.difficulty.value],target=Math.round(d.base*c.m/100)*100;ui.categoryInfo.innerHTML=`<strong>${c.name}</strong><br>${c.desc}<br>Win target: $${target} MRR`}
 const allCat=document.createElement('option');allCat.value='';allCat.textContent='All Categories';ui.leaderboardCategory.appendChild(allCat);
 populate();ui.category.value='hobbies';ui.settingsCategory.value='hobbies';ui.leaderboardCategory.value='';ui.playerName.value=localStorage.getItem(PLAYER_NAME_KEY)||ui.playerName.value;info();profileInfo();reset();updateMusicButton();updateLeaderboardTabs();
-ui.category.onchange=info;ui.difficulty.onchange=info;ui.playerName.oninput=profileInfo;ui.playerName.onchange=playerName;ui.leaderboardCategory.onchange=()=>{leaderboardScope='global';updateLeaderboardTabs();loadLeaderboard()};ui.leaderboardDifficulty.onchange=()=>{leaderboardScope='global';updateLeaderboardTabs();loadLeaderboard()};
+ui.category.onchange=()=>{info();profileInfo()};ui.difficulty.onchange=()=>{info();profileInfo()};ui.playerName.oninput=()=>{localStorage.setItem(PLAYER_NAME_KEY,ui.playerName.value.trim().replace(/\s+/g,' ').slice(0,18)||'Player');profileInfo()};ui.playerName.onchange=playerName;ui.leaderboardCategory.onchange=()=>{leaderboardScope='global';updateLeaderboardTabs();loadLeaderboard()};ui.leaderboardDifficulty.onchange=()=>{leaderboardScope='global';updateLeaderboardTabs();loadLeaderboard()};
 document.querySelectorAll('[data-leader-scope]').forEach(b=>b.onclick=()=>setLeaderboardScope(b.dataset.leaderScope));
 $('startBtn').onclick=start;$('pauseBtn').onclick=()=>pause();$('resumeBtn').onclick=()=>pause(true);$('leftBtn').onpointerdown=()=>move(-1);$('rightBtn').onpointerdown=()=>move(1);
 $('playAgainBtn').onclick=start;$('viewLeaderboardBtn').onclick=()=>{ui.winOverlay.classList.add('hidden');ui.leaderboardOverlay.classList.remove('hidden');setLeaderboardScope('global')};

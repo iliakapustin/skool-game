@@ -30,10 +30,12 @@ Open `http://localhost:3000`.
 - `GET /api/leaderboard` returns submitted mock leaderboard entries while the current server instance is warm.
 - The Canvas game has an in-game Leaderboard overlay that reads the top runs from `GET /api/leaderboard`.
 - Player name is saved locally, and the leaderboard marks the current browser profile as `YOU`.
+- The start screen shows the current local profile code and the browser's best saved run.
 - The in-game leaderboard can filter by category and difficulty.
 - Leaderboard results are deduped to the best run per browser player id before ranking.
 - Leaderboard tabs provide Global, My Category, and My Difficulty views.
 - Wins now open a run summary with MRR, score, rank status, activity, members, Play Again, and View Leaderboard actions.
+- Win and leaderboard screens update the local best-run summary after accepted score submissions.
 - When `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are configured, the API stores runs and reads the leaderboard from Supabase.
 - Without Supabase environment variables, the API falls back to in-memory mock storage for local development.
 - Desktop start/menu layout is kept compact so the start button is visible at 1280x720.
@@ -79,6 +81,7 @@ skool-game/
 - Server routes rate-limit score submissions by player id and request IP as a first anti-spam layer.
 - Current leaderboard storage is an in-memory mock for architecture testing only.
 - Local browser player ids are not secure identity; they are only a preparation step before real profiles/auth.
+- Local best-run data is client-side convenience only and must not be treated as trusted leaderboard data.
 
 ## Supabase Preparation
 
