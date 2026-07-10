@@ -30,6 +30,8 @@ Open `http://localhost:3000`.
 - The Canvas game has an in-game Leaderboard overlay that reads the top runs from `GET /api/leaderboard`.
 - Player name is saved locally, and the leaderboard marks the current browser profile as `YOU`.
 - The in-game leaderboard can filter by category and difficulty.
+- Leaderboard results are deduped to the best run per browser player id before ranking.
+- Leaderboard tabs provide Global, My Category, and My Difficulty views.
 - When `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are configured, the API stores runs and reads the leaderboard from Supabase.
 - Without Supabase environment variables, the API falls back to in-memory mock storage for local development.
 - Desktop start/menu layout is kept compact so the start button is visible at 1280x720.

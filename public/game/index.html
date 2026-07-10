@@ -38,6 +38,9 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
 .leaderRow.head{background:var(--navy);color:#fff}
 .leaderRow.me{background:#eafff1}
 .leaderFilters{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.leaderTabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.tabBtn{border:3px solid var(--navy);box-shadow:3px 3px 0 var(--navy);background:#fff;padding:9px 6px;font-weight:1000}
+.tabBtn.active{background:var(--yellow)}
 .leaderMeta{margin-top:8px;font-weight:900;color:var(--navy)}
 .profileInfo{border:3px solid var(--navy);background:#fff7d6;padding:8px;font-weight:900;text-align:left}
 .emptyState{border:3px solid var(--navy);background:#fff7d6;padding:12px;font-weight:900}
@@ -55,6 +58,7 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
   .info,.legend>div{padding:6px;font-size:13px}
   .leaderRow{font-size:13px}
   .leaderFilters{gap:8px;margin:8px 0}
+  .tabBtn{font-size:13px;padding:8px 5px}
   .primary{margin-top:8px;padding:10px 20px}
   #swipeHint{display:none}
 }
@@ -64,6 +68,7 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
   .chip{font-size:10px;min-width:59px;padding:4px;border-width:2px;box-shadow:2px 2px 0 var(--navy)}
   .form,.legend{grid-template-columns:1fr}
   .leaderFilters{grid-template-columns:1fr}
+  .leaderTabs{grid-template-columns:1fr;gap:6px}
   .leaderRow{grid-template-columns:34px 1.2fr .7fr .7fr;font-size:11px;gap:5px;padding:7px}
   .leaderRow span:nth-child(5){display:none}
   .panel{padding:13px}
@@ -153,6 +158,11 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
   <div class="panel">
     <h1>LEADERBOARD</h1>
     <p id="leaderboardStatus">Loading scores...</p>
+    <div class="leaderTabs">
+      <button class="tabBtn active" data-leader-scope="global">GLOBAL</button>
+      <button class="tabBtn" data-leader-scope="category">MY CATEGORY</button>
+      <button class="tabBtn" data-leader-scope="difficulty">MY DIFFICULTY</button>
+    </div>
     <div class="leaderFilters">
       <label>CATEGORY<select id="leaderboardCategory"></select></label>
       <label>DIFFICULTY<select id="leaderboardDifficulty"><option value="">All Difficulties</option><option value="easy">Easy</option><option value="normal">Normal</option><option value="hard">Hard</option></select></label>
@@ -173,6 +183,7 @@ const ui={level:$('level'),activity:$('activity'),goal:$('goal'),members:$('memb
 const GAME_VERSION='0.12.0-canvas-audio';
 const PLAYER_ID_KEY='skoolGamePlayerId';
 const PLAYER_NAME_KEY='skoolGamePlayerName';
+let leaderboardScope='global';
 function playerId(){let id=localStorage.getItem(PLAYER_ID_KEY);if(!id){id='local-'+(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2));localStorage.setItem(PLAYER_ID_KEY,id)}return id}
 function profileCode(){return playerId().replace(/^local-/,'').slice(0,8).toUpperCase()}
 function playerName(){const name=ui.playerName.value.trim().replace(/\s+/g,' ').slice(0,18)||'Player';ui.playerName.value=name;localStorage.setItem(PLAYER_NAME_KEY,name);profileInfo();return name}
@@ -250,12 +261,15 @@ notice(reason==='win'?'Score saved to leaderboard!':'Run saved!');
 }
 function cleanText(value){return String(value??'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]))}
 function shortCategory(value){return cats[value]?.name||String(value||'').toUpperCase()}
+function updateLeaderboardTabs(){document.querySelectorAll('[data-leader-scope]').forEach(b=>b.classList.toggle('active',b.dataset.leaderScope===leaderboardScope))}
+function setLeaderboardScope(scope){leaderboardScope=scope;updateLeaderboardTabs();if(scope==='global'){ui.leaderboardCategory.value='';ui.leaderboardDifficulty.value=''}else if(scope==='category'){ui.leaderboardCategory.value=s?.category||ui.category.value;ui.leaderboardDifficulty.value=''}else if(scope==='difficulty'){ui.leaderboardCategory.value='';ui.leaderboardDifficulty.value=s?.difficulty||ui.difficulty.value}loadLeaderboard()}
 function renderLeaderboard(entries,source){
 ui.leaderboardList.innerHTML='';
 ui.leaderboardMeta.textContent=source==='mock'?'Mock leaderboard - Supabase will make it permanent.':'Live leaderboard';
 if(!entries.length){ui.leaderboardStatus.textContent='No scores yet. Win a run to become #1.';return}
 const me=playerId(),mine=entries.find(e=>e.playerId===me);
-ui.leaderboardStatus.textContent=(mine?'Your rank: #'+mine.rank+' | ':'')+'Top '+entries.length+' Skool runs';
+const mode=leaderboardScope==='global'?'Global':leaderboardScope==='category'?'My Category':'My Difficulty';
+ui.leaderboardStatus.textContent=(mine?'Your rank: #'+mine.rank+' | ':'')+mode+' Top '+entries.length;
 ui.leaderboardList.innerHTML='<div class="leaderRow head"><span>#</span><span>PLAYER</span><span>MRR</span><span>SCORE</span><span>MODE</span></div>'+entries.map(e=>`<div class="leaderRow ${e.playerId===me?'me':''}"><span>${e.rank}</span><span>${cleanText(e.displayName)}${e.playerId===me?' (YOU)':''}<br><small>${cleanText(shortCategory(e.category))}</small></span><span>$${Math.floor(e.mrr||0)}</span><span>${Math.floor(e.score||0)}</span><span>${cleanText(e.difficulty||'')}</span></div>`).join('');
 }
 async function loadLeaderboard(){
@@ -341,8 +355,9 @@ function draw(){roadDraw();s.objects.forEach(object);decisionDraw();followers();
 function loop(){update();draw();requestAnimationFrame(loop)}
 function info(){const c=cats[ui.category.value],d=diffs[ui.difficulty.value],target=Math.round(d.base*c.m/100)*100;ui.categoryInfo.innerHTML=`<strong>${c.name}</strong><br>${c.desc}<br>Win target: $${target} MRR`}
 const allCat=document.createElement('option');allCat.value='';allCat.textContent='All Categories';ui.leaderboardCategory.appendChild(allCat);
-populate();ui.category.value='hobbies';ui.settingsCategory.value='hobbies';ui.leaderboardCategory.value='';ui.playerName.value=localStorage.getItem(PLAYER_NAME_KEY)||ui.playerName.value;info();profileInfo();reset();updateMusicButton();
-ui.category.onchange=info;ui.difficulty.onchange=info;ui.playerName.oninput=profileInfo;ui.playerName.onchange=playerName;ui.leaderboardCategory.onchange=loadLeaderboard;ui.leaderboardDifficulty.onchange=loadLeaderboard;
+populate();ui.category.value='hobbies';ui.settingsCategory.value='hobbies';ui.leaderboardCategory.value='';ui.playerName.value=localStorage.getItem(PLAYER_NAME_KEY)||ui.playerName.value;info();profileInfo();reset();updateMusicButton();updateLeaderboardTabs();
+ui.category.onchange=info;ui.difficulty.onchange=info;ui.playerName.oninput=profileInfo;ui.playerName.onchange=playerName;ui.leaderboardCategory.onchange=()=>{leaderboardScope='global';updateLeaderboardTabs();loadLeaderboard()};ui.leaderboardDifficulty.onchange=()=>{leaderboardScope='global';updateLeaderboardTabs();loadLeaderboard()};
+document.querySelectorAll('[data-leader-scope]').forEach(b=>b.onclick=()=>setLeaderboardScope(b.dataset.leaderScope));
 $('startBtn').onclick=start;$('pauseBtn').onclick=()=>pause();$('resumeBtn').onclick=()=>pause(true);$('leftBtn').onpointerdown=()=>move(-1);$('rightBtn').onpointerdown=()=>move(1);
 $('musicBtn').onclick=toggleMusic;
 let settingsWasPaused=false;

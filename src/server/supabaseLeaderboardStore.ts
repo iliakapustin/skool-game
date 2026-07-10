@@ -93,7 +93,7 @@ export async function getSupabaseLeaderboard(filters: LeaderboardFilters = {}): 
   const params = new URLSearchParams({
     select: "*",
     order: "score.desc,submitted_at.asc",
-    limit: String(clampLimit(filters.limit)),
+    limit: String(Math.max(clampLimit(filters.limit) * 8, 100)),
   });
 
   if (filters.category) params.set("category", `eq.${filters.category}`);
@@ -101,8 +101,8 @@ export async function getSupabaseLeaderboard(filters: LeaderboardFilters = {}): 
 
   const rows = await supabaseRequest<SupabaseLeaderboardRow[]>(`/leaderboard?${params.toString()}`);
 
-  return rows.map((row) => ({
-    rank: row.rank,
+  return bestLeaderboardRunPerPlayer(rows).slice(0, clampLimit(filters.limit)).map((row, index) => ({
+    rank: index + 1,
     playerId: row.player_id,
     displayName: row.display_name,
     category: row.category,
@@ -117,6 +117,26 @@ export async function getSupabaseLeaderboard(filters: LeaderboardFilters = {}): 
     score: row.score,
     submittedAt: row.submitted_at,
   }));
+}
+
+function bestLeaderboardRunPerPlayer(rows: SupabaseLeaderboardRow[]): SupabaseLeaderboardRow[] {
+  const bestRows = new Map<string, SupabaseLeaderboardRow>();
+
+  for (const row of rows) {
+    const current = bestRows.get(row.player_id);
+    if (!current || compareLeaderboardRows(row, current) < 0) {
+      bestRows.set(row.player_id, row);
+    }
+  }
+
+  return Array.from(bestRows.values()).sort(compareLeaderboardRows);
+}
+
+function compareLeaderboardRows(a: SupabaseLeaderboardRow, b: SupabaseLeaderboardRow): number {
+  if (b.score !== a.score) return b.score - a.score;
+  if (b.mrr !== a.mrr) return b.mrr - a.mrr;
+  if (b.activity !== a.activity) return b.activity - a.activity;
+  return new Date(a.submitted_at).getTime() - new Date(b.submitted_at).getTime();
 }
 
 async function upsertProfile(browserPlayerId: string, displayName: string): Promise<SupabaseProfileRow> {

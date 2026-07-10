@@ -39,7 +39,7 @@ export function getMockLeaderboard(filters: LeaderboardFilters = {}): Leaderboar
     return true;
   });
 
-  return filteredRuns.slice(0, limit).map((run, index) => ({
+  return bestRunPerPlayer(filteredRuns).slice(0, limit).map((run, index) => ({
     rank: index + 1,
     playerId: run.playerId,
     displayName: run.displayName,
@@ -62,6 +62,19 @@ function sortRuns(a: GameRunRecord, b: GameRunRecord): number {
   if (b.mrr !== a.mrr) return b.mrr - a.mrr;
   if (b.activity !== a.activity) return b.activity - a.activity;
   return a.durationMs - b.durationMs;
+}
+
+function bestRunPerPlayer(runs: GameRunRecord[]): GameRunRecord[] {
+  const bestRuns = new Map<string, GameRunRecord>();
+
+  for (const run of runs) {
+    const current = bestRuns.get(run.playerId);
+    if (!current || sortRuns(run, current) < 0) {
+      bestRuns.set(run.playerId, run);
+    }
+  }
+
+  return Array.from(bestRuns.values()).sort(sortRuns);
 }
 
 function clampLimit(limit: unknown): number {
