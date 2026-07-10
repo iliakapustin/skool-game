@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { GAME_CATEGORIES, GAME_DIFFICULTIES, type LeaderboardResponse } from "@/game/leaderboardTypes";
 import { getMockLeaderboard } from "@/server/mockLeaderboardStore";
+import { getSupabaseLeaderboard, isSupabaseConfigured } from "@/server/supabaseLeaderboardStore";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -14,6 +15,24 @@ export async function GET(request: Request) {
 
   if (difficulty && !GAME_DIFFICULTIES.includes(difficulty as never)) {
     return NextResponse.json({ ok: false, errors: ["Invalid difficulty."] }, { status: 400 });
+  }
+
+  if (isSupabaseConfigured()) {
+    try {
+      const response: LeaderboardResponse = {
+        entries: await getSupabaseLeaderboard({
+          category,
+          difficulty: difficulty as never,
+          limit,
+        }),
+        source: "supabase",
+      };
+
+      return NextResponse.json(response);
+    } catch (error) {
+      console.error("Supabase leaderboard read failed", error);
+      return NextResponse.json({ ok: false, errors: ["Leaderboard is temporarily unavailable."] }, { status: 503 });
+    }
   }
 
   const response: LeaderboardResponse = {

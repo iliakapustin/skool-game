@@ -28,6 +28,8 @@ Open `http://localhost:3000`.
 - The Canvas game creates a local browser player id and submits a validated run to `POST /api/runs` after a win.
 - `GET /api/leaderboard` returns submitted mock leaderboard entries while the current server instance is warm.
 - The Canvas game has an in-game Leaderboard overlay that reads the top runs from `GET /api/leaderboard`.
+- When `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are configured, the API stores runs and reads the leaderboard from Supabase.
+- Without Supabase environment variables, the API falls back to in-memory mock storage for local development.
 - Desktop start/menu layout is kept compact so the start button is visible at 1280x720.
 - Settings cancel returns to gameplay when settings were opened during an active run.
 - Collectibles use clearer in-game visuals for posts and flames.
@@ -76,11 +78,20 @@ skool-game/
 Before adding Supabase:
 
 1. Keep the local API contract stable: `POST /api/runs` and `GET /api/leaderboard`.
-2. Create database tables for profiles, runs, and leaderboard views.
+2. Run `docs/supabase-schema.sql` in the Supabase SQL Editor to create profiles, runs, leaderboard view, indexes, and RLS.
 3. Enable Row Level Security before public launch.
 4. Use the Supabase anon key only for safe client reads/auth flows.
 5. Use the Supabase service-role key only inside server-side API routes.
 6. Add rate limiting and stricter anti-cheat validation before accepting public leaderboard submissions.
+
+Required environment variables for the Supabase API step:
+
+```bash
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+```
+
+Do not put `SUPABASE_SERVICE_ROLE_KEY` in `public/`, browser code, or GitHub.
 
 
 ## Continue with Codex
