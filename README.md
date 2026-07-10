@@ -27,6 +27,7 @@ Open `http://localhost:3000`.
 - Mock API routes are available at `POST /api/runs` and `GET /api/leaderboard`.
 - The Canvas game creates a local browser player id and submits a validated run to `POST /api/runs` after a win.
 - `GET /api/leaderboard` returns submitted mock leaderboard entries while the current server instance is warm.
+- The Canvas game has an in-game Leaderboard overlay that reads the top runs from `GET /api/leaderboard`.
 - Desktop start/menu layout is kept compact so the start button is visible at 1280x720.
 - Settings cancel returns to gameplay when settings were opened during an active run.
 - Collectibles use clearer in-game visuals for posts and flames.

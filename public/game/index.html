@@ -20,6 +20,7 @@ canvas{width:100%;height:100%;display:block;image-rendering:pixelated;touch-acti
 .btn:active,.primary:active{transform:translate(4px,4px);box-shadow:1px 1px 0 var(--navy)}
 .corner{position:absolute;bottom:max(12px,env(safe-area-inset-bottom));z-index:8;width:52px;height:52px;font-size:23px}
 #settingsBtn{right:max(12px,env(safe-area-inset-right))}
+#leaderboardBtn{right:max(76px,calc(env(safe-area-inset-right) + 76px))}
 #fullscreenBtn{left:max(12px,env(safe-area-inset-left))}
 #musicBtn{left:max(76px,calc(env(safe-area-inset-left) + 76px))}
 .overlay{position:absolute;inset:0;z-index:20;background:rgba(238,245,251,.96);display:flex;align-items:center;justify-content:center;padding:16px}
@@ -32,6 +33,11 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
 .info,.legend>div{border:3px solid var(--navy);background:#f4f8fc;padding:8px;font-weight:800;text-align:left}
 .legend{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}
 .primary{margin-top:12px;padding:13px 23px;border:5px solid var(--navy);box-shadow:6px 6px 0 var(--navy);background:var(--yellow);font-size:20px;font-weight:1000}
+.leaderboard{display:grid;gap:8px;margin-top:12px;text-align:left}
+.leaderRow{display:grid;grid-template-columns:42px 1.4fr .8fr .8fr .8fr;gap:8px;align-items:center;border:3px solid var(--navy);background:#f4f8fc;padding:8px;font-weight:900}
+.leaderRow.head{background:var(--navy);color:#fff}
+.leaderMeta{margin-top:8px;font-weight:900;color:var(--navy)}
+.emptyState{border:3px solid var(--navy);background:#fff7d6;padding:12px;font-weight:900}
 #notice,#decisionText,#swipeHint{position:absolute;left:50%;transform:translateX(-50%);z-index:10;text-align:center;font-weight:1000;pointer-events:none}
 #notice{top:142px;background:var(--red);color:#fff;border:4px solid var(--navy);box-shadow:4px 4px 0 var(--navy);padding:8px 14px}
 #decisionText{top:105px;background:#fff;border:4px solid var(--navy);box-shadow:4px 4px 0 var(--navy);padding:7px 11px;max-width:84%}
@@ -44,6 +50,7 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
   .form{gap:8px;margin:8px 0}
   .legend{gap:5px;margin-top:8px}
   .info,.legend>div{padding:6px;font-size:13px}
+  .leaderRow{font-size:13px}
   .primary{margin-top:8px;padding:10px 20px}
   #swipeHint{display:none}
 }
@@ -52,6 +59,8 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
   .hud{top:42px;left:5px;right:5px}
   .chip{font-size:10px;min-width:59px;padding:4px;border-width:2px;box-shadow:2px 2px 0 var(--navy)}
   .form,.legend{grid-template-columns:1fr}
+  .leaderRow{grid-template-columns:34px 1.2fr .7fr .7fr;font-size:11px;gap:5px;padding:7px}
+  .leaderRow span:nth-child(5){display:none}
   .panel{padding:13px}
   #notice{top:116px;font-size:16px;max-width:90%}
   #decisionText{top:82px;font-size:12px}
@@ -88,6 +97,8 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
 <button class="btn corner" id="fullscreenBtn">⛶</button>
 <button class="btn corner" id="musicBtn">♫</button>
 <button class="btn corner" id="settingsBtn">⚙</button>
+
+<button class="btn corner" id="leaderboardBtn">LB</button>
 
 <div class="overlay" id="startOverlay">
   <div class="panel">
@@ -131,13 +142,24 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
     <button class="primary" id="closeSettings" style="background:#fff">CANCEL</button>
   </div>
 </div>
+
+<div class="overlay hidden" id="leaderboardOverlay">
+  <div class="panel">
+    <h1>LEADERBOARD</h1>
+    <p id="leaderboardStatus">Loading scores...</p>
+    <div class="leaderboard" id="leaderboardList"></div>
+    <div class="leaderMeta" id="leaderboardMeta"></div>
+    <button class="primary" id="refreshLeaderboard">REFRESH</button>
+    <button class="primary" id="closeLeaderboard" style="background:#fff">CLOSE</button>
+  </div>
+</div>
 </div>
 <script>
 (()=>{
 const $=id=>document.getElementById(id);
 const canvas=$('game'),ctx=canvas.getContext('2d'),shell=$('shell');
 ctx.imageSmoothingEnabled=false;
-const ui={level:$('level'),activity:$('activity'),goal:$('goal'),members:$('members'),streak:$('streak'),catHud:$('catHud'),modeHud:$('modeHud'),mrrChip:$('mrrChip'),winChip:$('winChip'),mrr:$('mrr'),winMrr:$('winMrr'),notice:$('notice'),decisionText:$('decisionText'),startOverlay:$('startOverlay'),pauseOverlay:$('pauseOverlay'),settingsOverlay:$('settingsOverlay'),category:$('category'),difficulty:$('difficulty'),settingsCategory:$('settingsCategory'),settingsDifficulty:$('settingsDifficulty'),categoryInfo:$('categoryInfo'),playerName:$('playerName'),swipeHint:$('swipeHint')};
+const ui={level:$('level'),activity:$('activity'),goal:$('goal'),members:$('members'),streak:$('streak'),catHud:$('catHud'),modeHud:$('modeHud'),mrrChip:$('mrrChip'),winChip:$('winChip'),mrr:$('mrr'),winMrr:$('winMrr'),notice:$('notice'),decisionText:$('decisionText'),startOverlay:$('startOverlay'),pauseOverlay:$('pauseOverlay'),settingsOverlay:$('settingsOverlay'),leaderboardOverlay:$('leaderboardOverlay'),leaderboardStatus:$('leaderboardStatus'),leaderboardList:$('leaderboardList'),leaderboardMeta:$('leaderboardMeta'),category:$('category'),difficulty:$('difficulty'),settingsCategory:$('settingsCategory'),settingsDifficulty:$('settingsDifficulty'),categoryInfo:$('categoryInfo'),playerName:$('playerName'),swipeHint:$('swipeHint')};
 const GAME_VERSION='0.12.0-canvas-audio';
 const PLAYER_ID_KEY='skoolGamePlayerId';
 function playerId(){let id=localStorage.getItem(PLAYER_ID_KEY);if(!id){id='local-'+(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2));localStorage.setItem(PLAYER_ID_KEY,id)}return id}
@@ -211,6 +233,26 @@ const data=await res.json().catch(()=>({}));
 if(!res.ok)throw new Error((data.errors||['Score was not accepted.']).join(' '));
 notice(reason==='win'?'Score saved to leaderboard!':'Run saved!');
 }catch(e){s.scoreSubmitted=false;notice('Score save failed. Try again later.');console.warn('Run submit failed',e)}
+}
+function cleanText(value){return String(value??'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]))}
+function shortCategory(value){return cats[value]?.name||String(value||'').toUpperCase()}
+function renderLeaderboard(entries,source){
+ui.leaderboardList.innerHTML='';
+ui.leaderboardMeta.textContent=source==='mock'?'Mock leaderboard - Supabase will make it permanent.':'Live leaderboard';
+if(!entries.length){ui.leaderboardStatus.textContent='No scores yet. Win a run to become #1.';return}
+ui.leaderboardStatus.textContent='Top '+entries.length+' Skool runs';
+ui.leaderboardList.innerHTML='<div class="leaderRow head"><span>#</span><span>PLAYER</span><span>MRR</span><span>SCORE</span><span>MODE</span></div>'+entries.map(e=>`<div class="leaderRow"><span>${e.rank}</span><span>${cleanText(e.displayName)}<br><small>${cleanText(shortCategory(e.category))}</small></span><span>$${Math.floor(e.mrr||0)}</span><span>${Math.floor(e.score||0)}</span><span>${cleanText(e.difficulty||'')}</span></div>`).join('');
+}
+async function loadLeaderboard(){
+ui.leaderboardStatus.textContent='Loading scores...';
+ui.leaderboardList.innerHTML='';
+ui.leaderboardMeta.textContent='';
+try{
+const res=await fetch('/api/leaderboard?limit=10',{headers:{'Accept':'application/json'}});
+const data=await res.json();
+if(!res.ok)throw new Error('Leaderboard request failed');
+renderLeaderboard(Array.isArray(data.entries)?data.entries:[],data.source);
+}catch(e){ui.leaderboardStatus.textContent='Leaderboard is only available in the Next/Vercel app.';ui.leaderboardList.innerHTML='<div class="emptyState">Use localhost:3000 or skool-game.vercel.app to test API scores.</div>';ui.leaderboardMeta.textContent='';console.warn('Leaderboard load failed',e)}
 }
 function addMRR(n,useStreak=true){const amount=n>0&&useStreak?Math.round(n*streakMult()):n;s.mrr=Math.max(0,s.mrr+amount);if(amount>0)say('mrr');if(s.mrr>=winGoal()&&!s.won){s.won=true;notice('🏆 You won the Skool Games!');s.paused=true;syncMusic();setTimeout(()=>{ui.pauseOverlay.querySelector('h1').textContent='YOU WON!';ui.pauseOverlay.classList.remove('hidden')},400)}}
 function spawn(){
@@ -288,6 +330,10 @@ let settingsWasPaused=false;
 $('settingsBtn').onclick=()=>{settingsWasPaused=s.paused;if(s.running&&!s.paused)pause();ui.settingsCategory.value=s.category;ui.settingsDifficulty.value=s.difficulty;ui.settingsOverlay.classList.remove('hidden')};
 $('closeSettings').onclick=()=>{ui.settingsOverlay.classList.add('hidden');if(s.running&&!settingsWasPaused&&s.paused)pause(true)};
 $('applySettings').onclick=()=>{ui.category.value=ui.settingsCategory.value;ui.difficulty.value=ui.settingsDifficulty.value;info();ui.settingsOverlay.classList.add('hidden');start()};
+let leaderboardWasPaused=false;
+$('leaderboardBtn').onclick=()=>{leaderboardWasPaused=s.paused;if(s.running&&!s.paused)pause();ui.leaderboardOverlay.classList.remove('hidden');loadLeaderboard()};
+$('refreshLeaderboard').onclick=loadLeaderboard;
+$('closeLeaderboard').onclick=()=>{ui.leaderboardOverlay.classList.add('hidden');if(s.running&&!leaderboardWasPaused&&s.paused)pause(true)};
 $('fullscreenBtn').onclick=async()=>{try{document.fullscreenElement?await document.exitFullscreen():await shell.requestFullscreen?.()}catch(e){}};
 document.addEventListener('keydown',e=>{if(['ArrowLeft','a','A'].includes(e.key))move(-1);if(['ArrowRight','d','D'].includes(e.key))move(1);if(['p','P','Escape'].includes(e.key))pause()});
 let sx=0,sy=0,st=0,sw=false;
