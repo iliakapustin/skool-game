@@ -25,6 +25,8 @@ Open `http://localhost:3000`.
 - Leaderboard-ready TypeScript models live in `src/game/leaderboardTypes.ts`.
 - Run submissions are validated server-side in `src/server/scoreValidation.ts`.
 - Mock API routes are available at `POST /api/runs` and `GET /api/leaderboard`.
+- The Canvas game creates a local browser player id and submits a validated run to `POST /api/runs` after a win.
+- `GET /api/leaderboard` returns submitted mock leaderboard entries while the current server instance is warm.
 - Desktop start/menu layout is kept compact so the start button is visible at 1280x720.
 - Settings cancel returns to gameplay when settings were opened during an active run.
 - Collectibles use clearer in-game visuals for posts and flames.
@@ -66,6 +68,7 @@ skool-game/
 - Score submissions must go through server routes first.
 - Server routes validate category, difficulty, duration, activity, members, MRR, and win state before accepting a run.
 - Current leaderboard storage is an in-memory mock for architecture testing only.
+- Local browser player ids are not secure identity; they are only a preparation step before real profiles/auth.
 
 ## Supabase Preparation
 
