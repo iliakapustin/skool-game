@@ -32,6 +32,7 @@ Open `http://localhost:3000`.
 - The in-game leaderboard can filter by category and difficulty.
 - Leaderboard results are deduped to the best run per browser player id before ranking.
 - Leaderboard tabs provide Global, My Category, and My Difficulty views.
+- Wins now open a run summary with MRR, score, rank status, activity, members, Play Again, and View Leaderboard actions.
 - When `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are configured, the API stores runs and reads the leaderboard from Supabase.
 - Without Supabase environment variables, the API falls back to in-memory mock storage for local development.
 - Desktop start/menu layout is kept compact so the start button is visible at 1280x720.
