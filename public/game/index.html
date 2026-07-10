@@ -36,7 +36,10 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
 .leaderboard{display:grid;gap:8px;margin-top:12px;text-align:left}
 .leaderRow{display:grid;grid-template-columns:42px 1.4fr .8fr .8fr .8fr;gap:8px;align-items:center;border:3px solid var(--navy);background:#f4f8fc;padding:8px;font-weight:900}
 .leaderRow.head{background:var(--navy);color:#fff}
+.leaderRow.me{background:#eafff1}
+.leaderFilters{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
 .leaderMeta{margin-top:8px;font-weight:900;color:var(--navy)}
+.profileInfo{border:3px solid var(--navy);background:#fff7d6;padding:8px;font-weight:900;text-align:left}
 .emptyState{border:3px solid var(--navy);background:#fff7d6;padding:12px;font-weight:900}
 #notice,#decisionText,#swipeHint{position:absolute;left:50%;transform:translateX(-50%);z-index:10;text-align:center;font-weight:1000;pointer-events:none}
 #notice{top:142px;background:var(--red);color:#fff;border:4px solid var(--navy);box-shadow:4px 4px 0 var(--navy);padding:8px 14px}
@@ -51,6 +54,7 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
   .legend{gap:5px;margin-top:8px}
   .info,.legend>div{padding:6px;font-size:13px}
   .leaderRow{font-size:13px}
+  .leaderFilters{gap:8px;margin:8px 0}
   .primary{margin-top:8px;padding:10px 20px}
   #swipeHint{display:none}
 }
@@ -59,6 +63,7 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
   .hud{top:42px;left:5px;right:5px}
   .chip{font-size:10px;min-width:59px;padding:4px;border-width:2px;box-shadow:2px 2px 0 var(--navy)}
   .form,.legend{grid-template-columns:1fr}
+  .leaderFilters{grid-template-columns:1fr}
   .leaderRow{grid-template-columns:34px 1.2fr .7fr .7fr;font-size:11px;gap:5px;padding:7px}
   .leaderRow span:nth-child(5){display:none}
   .panel{padding:13px}
@@ -110,6 +115,7 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
       <label>DIFFICULTY<select id="difficulty"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select></label>
       <div class="info" id="categoryInfo"></div>
     </div>
+    <div class="profileInfo" id="profileInfo"></div>
     <div class="legend">
       <div>👤 Member: +1 member, +10 activity; after monetization +$30 MRR.</div>
       <div>📝 Post: +20 activity.</div>
@@ -147,6 +153,10 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
   <div class="panel">
     <h1>LEADERBOARD</h1>
     <p id="leaderboardStatus">Loading scores...</p>
+    <div class="leaderFilters">
+      <label>CATEGORY<select id="leaderboardCategory"></select></label>
+      <label>DIFFICULTY<select id="leaderboardDifficulty"><option value="">All Difficulties</option><option value="easy">Easy</option><option value="normal">Normal</option><option value="hard">Hard</option></select></label>
+    </div>
     <div class="leaderboard" id="leaderboardList"></div>
     <div class="leaderMeta" id="leaderboardMeta"></div>
     <button class="primary" id="refreshLeaderboard">REFRESH</button>
@@ -159,10 +169,14 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
 const $=id=>document.getElementById(id);
 const canvas=$('game'),ctx=canvas.getContext('2d'),shell=$('shell');
 ctx.imageSmoothingEnabled=false;
-const ui={level:$('level'),activity:$('activity'),goal:$('goal'),members:$('members'),streak:$('streak'),catHud:$('catHud'),modeHud:$('modeHud'),mrrChip:$('mrrChip'),winChip:$('winChip'),mrr:$('mrr'),winMrr:$('winMrr'),notice:$('notice'),decisionText:$('decisionText'),startOverlay:$('startOverlay'),pauseOverlay:$('pauseOverlay'),settingsOverlay:$('settingsOverlay'),leaderboardOverlay:$('leaderboardOverlay'),leaderboardStatus:$('leaderboardStatus'),leaderboardList:$('leaderboardList'),leaderboardMeta:$('leaderboardMeta'),category:$('category'),difficulty:$('difficulty'),settingsCategory:$('settingsCategory'),settingsDifficulty:$('settingsDifficulty'),categoryInfo:$('categoryInfo'),playerName:$('playerName'),swipeHint:$('swipeHint')};
+const ui={level:$('level'),activity:$('activity'),goal:$('goal'),members:$('members'),streak:$('streak'),catHud:$('catHud'),modeHud:$('modeHud'),mrrChip:$('mrrChip'),winChip:$('winChip'),mrr:$('mrr'),winMrr:$('winMrr'),notice:$('notice'),decisionText:$('decisionText'),startOverlay:$('startOverlay'),pauseOverlay:$('pauseOverlay'),settingsOverlay:$('settingsOverlay'),leaderboardOverlay:$('leaderboardOverlay'),leaderboardStatus:$('leaderboardStatus'),leaderboardList:$('leaderboardList'),leaderboardMeta:$('leaderboardMeta'),leaderboardCategory:$('leaderboardCategory'),leaderboardDifficulty:$('leaderboardDifficulty'),category:$('category'),difficulty:$('difficulty'),settingsCategory:$('settingsCategory'),settingsDifficulty:$('settingsDifficulty'),categoryInfo:$('categoryInfo'),profileInfo:$('profileInfo'),playerName:$('playerName'),swipeHint:$('swipeHint')};
 const GAME_VERSION='0.12.0-canvas-audio';
 const PLAYER_ID_KEY='skoolGamePlayerId';
+const PLAYER_NAME_KEY='skoolGamePlayerName';
 function playerId(){let id=localStorage.getItem(PLAYER_ID_KEY);if(!id){id='local-'+(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2));localStorage.setItem(PLAYER_ID_KEY,id)}return id}
+function profileCode(){return playerId().replace(/^local-/,'').slice(0,8).toUpperCase()}
+function playerName(){const name=ui.playerName.value.trim().replace(/\s+/g,' ').slice(0,18)||'Player';ui.playerName.value=name;localStorage.setItem(PLAYER_NAME_KEY,name);profileInfo();return name}
+function profileInfo(){if(ui.profileInfo)ui.profileInfo.textContent='Profile: '+profileCode()+' | Name: '+(ui.playerName.value.trim()||'Player')}
 const music=new Audio('/audio/SKOOL%20GAME.wav');
 music.loop=true;music.volume=.35;music.preload='auto';
 let musicMuted=localStorage.getItem('skoolGameMusicMuted')==='true';
@@ -198,7 +212,7 @@ highTicket:['High ticket sale!','Premium member converted!']
 };
 const W=1280,H=720,roadTop=105,roadBottom=765,road={tl:358,tr:922,bl:45,br:1235};
 let s;
-function populate(){for(const[k,c]of Object.entries(cats)){for(const el of[ui.category,ui.settingsCategory]){const o=document.createElement('option');o.value=k;o.textContent=c.name;el.appendChild(o)}}}
+function populate(){for(const[k,c]of Object.entries(cats)){for(const el of[ui.category,ui.settingsCategory]){const o=document.createElement('option');o.value=k;o.textContent=c.name;el.appendChild(o)}const lo=document.createElement('option');lo.value=k;lo.textContent=c.name;ui.leaderboardCategory.appendChild(lo)}}
 function bounds(y){const t=Math.max(0,Math.min(1,(y-roadTop)/(roadBottom-roadTop)));return{l:road.tl+(road.bl-road.tl)*t,r:road.tr+(road.br-road.tr)*t}}
 function laneX(l,y){const b=bounds(y);return b.l+(b.r-b.l)*((l+.5)/3)}
 function cat(){return cats[s.category]} function diff(){return diffs[s.difficulty]}
@@ -206,7 +220,7 @@ function goal(l){let b=l===1?200:l===2?500:500+((l-2)*(l-1)/2)*400;return Math.r
 function winGoal(){return Math.round(diff().base*cat().m/100)*100}
 function key(){return`skool:${s.category}:${s.difficulty}:${s.name}`}
 function save(){const old=JSON.parse(localStorage.getItem(key())||'{}');localStorage.setItem(key(),JSON.stringify({activity:Math.max(old.activity||0,s.activity),members:Math.max(old.members||1,s.members),mrr:Math.max(old.mrr||0,s.mrr),level:Math.max(old.level||1,s.level)}))}
-function reset(){s={running:false,paused:false,name:ui.playerName.value.trim()||'Player',category:ui.category.value,difficulty:ui.difficulty.value,player:{lane:1,x:laneX(1,H-140),tx:laneX(1,H-140),y:H-140},objects:[],particles:[],followers:[],members:1,activity:0,level:1,streak:0,shield:0,mrr:0,monetized:false,offered:false,won:false,runStartTime:0,scoreSubmitted:false,speed:4.2*cats[ui.category.value].f*diffs[ui.difficulty.value].speed,spawn:0,time:0,offset:0,decision:null,decisionCooldown:360,notice:0,boost:false,boostFrames:0,boostSpawn:0,boostLane:1,boostLaneTimer:0,magnetFrames:0,empty:0};syncFollowers();hud()}
+function reset(){s={running:false,paused:false,name:playerName(),category:ui.category.value,difficulty:ui.difficulty.value,player:{lane:1,x:laneX(1,H-140),tx:laneX(1,H-140),y:H-140},objects:[],particles:[],followers:[],members:1,activity:0,level:1,streak:0,shield:0,mrr:0,monetized:false,offered:false,won:false,runStartTime:0,scoreSubmitted:false,speed:4.2*cats[ui.category.value].f*diffs[ui.difficulty.value].speed,spawn:0,time:0,offset:0,decision:null,decisionCooldown:360,notice:0,boost:false,boostFrames:0,boostSpawn:0,boostLane:1,boostLaneTimer:0,magnetFrames:0,empty:0};syncFollowers();hud()}
 function streakMult(){return s.streak>=20?3:s.streak>=10?2:s.streak>=5?1.5:s.streak>=3?1.2:1}
 function hud(){if(s.won&&!s.scoreSubmitted)submitRun('win');ui.level.textContent=s.level;ui.activity.textContent=Math.floor(s.activity);ui.goal.textContent=goal(s.level);ui.members.textContent=s.members;ui.streak.textContent=s.streak+(streakMult()>1?' x'+streakMult():'');ui.catHud.textContent=cat().name.toUpperCase();ui.modeHud.textContent=s.magnetFrames>0?'MAGNET':s.monetized?'MONETIZED':'FREE';ui.mrr.textContent=Math.floor(s.mrr);ui.winMrr.textContent=winGoal();ui.mrrChip.classList.toggle('hidden',!s.monetized);ui.winChip.classList.toggle('hidden',!s.monetized)}
 function notice(t){ui.notice.textContent=t;ui.notice.classList.remove('hidden');s.notice=110}
@@ -240,15 +254,19 @@ function renderLeaderboard(entries,source){
 ui.leaderboardList.innerHTML='';
 ui.leaderboardMeta.textContent=source==='mock'?'Mock leaderboard - Supabase will make it permanent.':'Live leaderboard';
 if(!entries.length){ui.leaderboardStatus.textContent='No scores yet. Win a run to become #1.';return}
-ui.leaderboardStatus.textContent='Top '+entries.length+' Skool runs';
-ui.leaderboardList.innerHTML='<div class="leaderRow head"><span>#</span><span>PLAYER</span><span>MRR</span><span>SCORE</span><span>MODE</span></div>'+entries.map(e=>`<div class="leaderRow"><span>${e.rank}</span><span>${cleanText(e.displayName)}<br><small>${cleanText(shortCategory(e.category))}</small></span><span>$${Math.floor(e.mrr||0)}</span><span>${Math.floor(e.score||0)}</span><span>${cleanText(e.difficulty||'')}</span></div>`).join('');
+const me=playerId(),mine=entries.find(e=>e.playerId===me);
+ui.leaderboardStatus.textContent=(mine?'Your rank: #'+mine.rank+' | ':'')+'Top '+entries.length+' Skool runs';
+ui.leaderboardList.innerHTML='<div class="leaderRow head"><span>#</span><span>PLAYER</span><span>MRR</span><span>SCORE</span><span>MODE</span></div>'+entries.map(e=>`<div class="leaderRow ${e.playerId===me?'me':''}"><span>${e.rank}</span><span>${cleanText(e.displayName)}${e.playerId===me?' (YOU)':''}<br><small>${cleanText(shortCategory(e.category))}</small></span><span>$${Math.floor(e.mrr||0)}</span><span>${Math.floor(e.score||0)}</span><span>${cleanText(e.difficulty||'')}</span></div>`).join('');
 }
 async function loadLeaderboard(){
 ui.leaderboardStatus.textContent='Loading scores...';
 ui.leaderboardList.innerHTML='';
 ui.leaderboardMeta.textContent='';
 try{
-const res=await fetch('/api/leaderboard?limit=10',{headers:{'Accept':'application/json'}});
+const params=new URLSearchParams({limit:'25'});
+if(ui.leaderboardCategory.value)params.set('category',ui.leaderboardCategory.value);
+if(ui.leaderboardDifficulty.value)params.set('difficulty',ui.leaderboardDifficulty.value);
+const res=await fetch('/api/leaderboard?'+params.toString(),{headers:{'Accept':'application/json'}});
 const data=await res.json();
 if(!res.ok)throw new Error('Leaderboard request failed');
 renderLeaderboard(Array.isArray(data.entries)?data.entries:[],data.source);
@@ -322,8 +340,9 @@ function decisionDraw(){if(!s.decision)return;for(const c of[s.decision.left,s.d
 function draw(){roadDraw();s.objects.forEach(object);decisionDraw();followers();runner(s.player.x,s.player.y,1,'#071426','⭐');if(s.shield){ctx.strokeStyle='#ffc83d';ctx.lineWidth=5;ctx.beginPath();ctx.arc(s.player.x,s.player.y,45,0,Math.PI*2);ctx.stroke()}}
 function loop(){update();draw();requestAnimationFrame(loop)}
 function info(){const c=cats[ui.category.value],d=diffs[ui.difficulty.value],target=Math.round(d.base*c.m/100)*100;ui.categoryInfo.innerHTML=`<strong>${c.name}</strong><br>${c.desc}<br>Win target: $${target} MRR`}
-populate();ui.category.value='hobbies';ui.settingsCategory.value='hobbies';info();reset();updateMusicButton();
-ui.category.onchange=info;ui.difficulty.onchange=info;
+const allCat=document.createElement('option');allCat.value='';allCat.textContent='All Categories';ui.leaderboardCategory.appendChild(allCat);
+populate();ui.category.value='hobbies';ui.settingsCategory.value='hobbies';ui.leaderboardCategory.value='';ui.playerName.value=localStorage.getItem(PLAYER_NAME_KEY)||ui.playerName.value;info();profileInfo();reset();updateMusicButton();
+ui.category.onchange=info;ui.difficulty.onchange=info;ui.playerName.oninput=profileInfo;ui.playerName.onchange=playerName;ui.leaderboardCategory.onchange=loadLeaderboard;ui.leaderboardDifficulty.onchange=loadLeaderboard;
 $('startBtn').onclick=start;$('pauseBtn').onclick=()=>pause();$('resumeBtn').onclick=()=>pause(true);$('leftBtn').onpointerdown=()=>move(-1);$('rightBtn').onpointerdown=()=>move(1);
 $('musicBtn').onclick=toggleMusic;
 let settingsWasPaused=false;
