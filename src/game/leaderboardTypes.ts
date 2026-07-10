@@ -1,4 +1,4 @@
-export const GAME_VERSION = "0.12.0-canvas-audio";
+export const GAME_VERSION = "0.12.1-canvas-profile";
 
 export const GAME_CATEGORIES = [
   "hobbies",

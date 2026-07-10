@@ -78,6 +78,7 @@ skool-game/
 - Do not let the browser write trusted leaderboard rows directly.
 - Score submissions must go through server routes first.
 - Server routes validate category, difficulty, duration, activity, members, MRR, and win state before accepting a run.
+- Server-side plausibility checks reject impossible win duration, level/activity mismatch, MRR below the category win goal, and extreme activity/member/MRR growth for the submitted duration.
 - Server routes rate-limit score submissions by player id and request IP as a first anti-spam layer.
 - Current leaderboard storage is an in-memory mock for architecture testing only.
 - Local browser player ids are not secure identity; they are only a preparation step before real profiles/auth.
