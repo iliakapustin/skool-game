@@ -20,6 +20,8 @@ Open `http://localhost:3000`.
 ## Current prototype notes
 
 - The Canvas prototype is served from `public/game/index.html`.
+- Custom background music is loaded from `public/audio/SKOOL GAME.wav` after the player starts a run.
+- The music button toggles mute state and stores that preference locally.
 - Desktop start/menu layout is kept compact so the start button is visible at 1280x720.
 - Settings cancel returns to gameplay when settings were opened during an active run.
 - Collectibles use clearer in-game visuals for posts and flames.

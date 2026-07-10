@@ -21,6 +21,7 @@ canvas{width:100%;height:100%;display:block;image-rendering:pixelated;touch-acti
 .corner{position:absolute;bottom:max(12px,env(safe-area-inset-bottom));z-index:8;width:52px;height:52px;font-size:23px}
 #settingsBtn{right:max(12px,env(safe-area-inset-right))}
 #fullscreenBtn{left:max(12px,env(safe-area-inset-left))}
+#musicBtn{left:max(76px,calc(env(safe-area-inset-left) + 76px))}
 .overlay{position:absolute;inset:0;z-index:20;background:rgba(238,245,251,.96);display:flex;align-items:center;justify-content:center;padding:16px}
 .hidden{display:none!important}
 .panel{width:min(680px,96%);max-height:94dvh;overflow:auto;background:#fff;border:5px solid var(--navy);box-shadow:9px 9px 0 var(--navy);padding:18px;text-align:center}
@@ -85,6 +86,7 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
   <button class="btn" id="rightBtn">▶</button>
 </div>
 <button class="btn corner" id="fullscreenBtn">⛶</button>
+<button class="btn corner" id="musicBtn">♫</button>
 <button class="btn corner" id="settingsBtn">⚙</button>
 
 <div class="overlay" id="startOverlay">
@@ -136,6 +138,12 @@ const $=id=>document.getElementById(id);
 const canvas=$('game'),ctx=canvas.getContext('2d'),shell=$('shell');
 ctx.imageSmoothingEnabled=false;
 const ui={level:$('level'),activity:$('activity'),goal:$('goal'),members:$('members'),streak:$('streak'),catHud:$('catHud'),modeHud:$('modeHud'),mrrChip:$('mrrChip'),winChip:$('winChip'),mrr:$('mrr'),winMrr:$('winMrr'),notice:$('notice'),decisionText:$('decisionText'),startOverlay:$('startOverlay'),pauseOverlay:$('pauseOverlay'),settingsOverlay:$('settingsOverlay'),category:$('category'),difficulty:$('difficulty'),settingsCategory:$('settingsCategory'),settingsDifficulty:$('settingsDifficulty'),categoryInfo:$('categoryInfo'),playerName:$('playerName'),swipeHint:$('swipeHint')};
+const music=new Audio('/audio/SKOOL%20GAME.wav');
+music.loop=true;music.volume=.35;music.preload='auto';
+let musicMuted=localStorage.getItem('skoolGameMusicMuted')==='true';
+function updateMusicButton(){const b=$('musicBtn');if(b)b.textContent=musicMuted?'M':'♫'}
+function syncMusic(){if(musicMuted||!s?.running||s.paused){music.pause();return}music.play().catch(()=>{})}
+function toggleMusic(){musicMuted=!musicMuted;localStorage.setItem('skoolGameMusicMuted',String(musicMuted));updateMusicButton();syncMusic()}
 const cats={
 hobbies:{name:'Hobbies',f:.78,m:1,icons:['🎸','🎹','⚽','🎨','📷'],desc:'Lower competition.'},
 music:{name:'Music',f:.88,m:1.1,icons:['🎸','🎹','🥁','🎤','🎧'],desc:'Creative, moderate competition.'},
@@ -188,9 +196,9 @@ function addMembers(n,engaged=true){const before=s.members;s.members=Math.max(1,
 let swipeHintDismissed=false;
 function showSwipeHint(){swipeHintDismissed=false;ui.swipeHint.style.display=matchMedia('(max-width:720px)').matches?'block':'';ui.swipeHint.style.opacity='1';setTimeout(()=>{if(!swipeHintDismissed)ui.swipeHint.style.opacity='.7'},2500)}
 function hideSwipeHint(){swipeHintDismissed=true;ui.swipeHint.style.opacity='0';ui.swipeHint.style.display='none'}
-function start(){reset();s.running=true;ui.startOverlay.classList.add('hidden');ui.pauseOverlay.classList.add('hidden');ui.settingsOverlay.classList.add('hidden');showSwipeHint()}
-function pause(force=false){if(!s.running)return;s.paused=force?false:!s.paused;ui.pauseOverlay.classList.toggle('hidden',!s.paused)}
-function addMRR(n,useStreak=true){const amount=n>0&&useStreak?Math.round(n*streakMult()):n;s.mrr=Math.max(0,s.mrr+amount);if(amount>0)say('mrr');if(s.mrr>=winGoal()&&!s.won){s.won=true;notice('🏆 You won the Skool Games!');s.paused=true;setTimeout(()=>{ui.pauseOverlay.querySelector('h1').textContent='YOU WON!';ui.pauseOverlay.classList.remove('hidden')},400)}}
+function start(){reset();s.running=true;ui.startOverlay.classList.add('hidden');ui.pauseOverlay.classList.add('hidden');ui.settingsOverlay.classList.add('hidden');showSwipeHint();syncMusic()}
+function pause(force=false){if(!s.running)return;s.paused=force?false:!s.paused;ui.pauseOverlay.classList.toggle('hidden',!s.paused);syncMusic()}
+function addMRR(n,useStreak=true){const amount=n>0&&useStreak?Math.round(n*streakMult()):n;s.mrr=Math.max(0,s.mrr+amount);if(amount>0)say('mrr');if(s.mrr>=winGoal()&&!s.won){s.won=true;notice('🏆 You won the Skool Games!');s.paused=true;syncMusic();setTimeout(()=>{ui.pauseOverlay.querySelector('h1').textContent='YOU WON!';ui.pauseOverlay.classList.remove('hidden')},400)}}
 function spawn(){
 if(s.decision)return;
 const topY=roadTop+8;
@@ -258,9 +266,10 @@ function decisionDraw(){if(!s.decision)return;for(const c of[s.decision.left,s.d
 function draw(){roadDraw();s.objects.forEach(object);decisionDraw();followers();runner(s.player.x,s.player.y,1,'#071426','⭐');if(s.shield){ctx.strokeStyle='#ffc83d';ctx.lineWidth=5;ctx.beginPath();ctx.arc(s.player.x,s.player.y,45,0,Math.PI*2);ctx.stroke()}}
 function loop(){update();draw();requestAnimationFrame(loop)}
 function info(){const c=cats[ui.category.value],d=diffs[ui.difficulty.value],target=Math.round(d.base*c.m/100)*100;ui.categoryInfo.innerHTML=`<strong>${c.name}</strong><br>${c.desc}<br>Win target: $${target} MRR`}
-populate();ui.category.value='hobbies';ui.settingsCategory.value='hobbies';info();reset();
+populate();ui.category.value='hobbies';ui.settingsCategory.value='hobbies';info();reset();updateMusicButton();
 ui.category.onchange=info;ui.difficulty.onchange=info;
 $('startBtn').onclick=start;$('pauseBtn').onclick=()=>pause();$('resumeBtn').onclick=()=>pause(true);$('leftBtn').onpointerdown=()=>move(-1);$('rightBtn').onpointerdown=()=>move(1);
+$('musicBtn').onclick=toggleMusic;
 let settingsWasPaused=false;
 $('settingsBtn').onclick=()=>{settingsWasPaused=s.paused;if(s.running&&!s.paused)pause();ui.settingsCategory.value=s.category;ui.settingsDifficulty.value=s.difficulty;ui.settingsOverlay.classList.remove('hidden')};
 $('closeSettings').onclick=()=>{ui.settingsOverlay.classList.add('hidden');if(s.running&&!settingsWasPaused&&s.paused)pause(true)};
