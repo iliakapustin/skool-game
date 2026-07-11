@@ -93,12 +93,22 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
   #swipeHint{display:none}
 }
 @media(max-width:720px){
-  .brand{font-size:11px;padding:5px 9px}
-  .hud{top:42px;left:5px;right:5px}
-  #progressWrap{top:96px;width:min(300px,54vw);height:18px}
-  .chip{font-size:10px;min-width:59px;padding:4px;border-width:2px;box-shadow:2px 2px 0 var(--navy)}
-  .btn{width:62px;height:54px;font-size:13px}
-  .corner{width:48px;height:48px;font-size:11px}
+  .brand{top:max(6px,env(safe-area-inset-top));font-size:12px;padding:6px 12px;letter-spacing:3px;box-shadow:2px 2px 0 var(--navy)}
+  .hud{top:54px;left:6px;right:6px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+  .hud .group{display:contents}
+  .chip{min-width:0;width:100%;height:40px;display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:10px;line-height:1.05;padding:3px 2px;border-width:2px;box-shadow:2px 2px 0 var(--navy);overflow:hidden}
+  .chip small{font-size:8px;line-height:1}
+  #progressWrap{top:142px;width:calc(100vw - 28px);max-width:420px;height:16px;border-width:2px;box-shadow:2px 2px 0 var(--navy)}
+  #progressLabel{font-size:9px}
+  .btn{width:44px;height:44px;border-width:3px;box-shadow:3px 3px 0 var(--navy);font-size:12px;color:var(--blue)}
+  .controls{bottom:max(9px,env(safe-area-inset-bottom));gap:8px}
+  .corner{bottom:max(9px,env(safe-area-inset-bottom));width:44px;height:44px;font-size:11px}
+  #fullscreenBtn{left:max(7px,env(safe-area-inset-left))}
+  #musicBtn{left:max(58px,calc(env(safe-area-inset-left) + 58px))}
+  #settingsBtn{right:max(7px,env(safe-area-inset-right))}
+  #leaderboardBtn{right:max(58px,calc(env(safe-area-inset-right) + 58px))}
+  .fsIcon{width:20px;height:20px}
+  .fsIcon span{width:7px;height:7px}
   .form,.legend{grid-template-columns:1fr}
   .startActions{grid-template-columns:1fr}
   .builderFields{grid-template-columns:1fr}
@@ -109,11 +119,12 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
   .leaderRow{grid-template-columns:34px 1.2fr .7fr .7fr;font-size:11px;gap:5px;padding:7px}
   .leaderRow span:nth-child(5){display:none}
   .panel{padding:13px}
-  #notice{top:116px;font-size:16px;max-width:90%}
-  #decisionText{top:82px;font-size:12px}
-  #choiceResult{top:124px;font-size:12px;width:90%}
+  #notice{top:166px;font-size:13px;max-width:92%;padding:7px 10px;border-width:3px;box-shadow:3px 3px 0 var(--navy)}
+  #decisionText{top:166px;width:calc(100vw - 34px);max-width:430px;font-size:12px;line-height:1.15;padding:7px 9px;border-width:3px;box-shadow:3px 3px 0 var(--navy)}
+  #choiceResult{top:206px;font-size:12px;width:calc(100vw - 34px);max-width:430px;border-width:3px;box-shadow:3px 3px 0 var(--navy)}
   #choiceResult strong{font-size:14px}
   #choiceResult span{font-size:11px}
+  #swipeHint{bottom:max(64px,calc(env(safe-area-inset-bottom) + 64px));font-size:11px}
 }
 </style>
 </head>
