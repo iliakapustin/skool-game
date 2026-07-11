@@ -42,6 +42,8 @@ Local file changes alone do not update `https://skool-game.vercel.app`. The live
 - Custom background music is loaded from `public/audio/SKOOL GAME.wav` after the player starts a run.
 - The music button toggles background music plus generated WebAudio sound effects and stores that preference locally.
 - Generated sound effects play for lane movement, collectibles, MRR rewards, hazards, boosts, and wins.
+- Pause, win, and leaderboard overlays include a Main Menu action so players can restart and switch between Arcade Mode and Community Builder Mode.
+- The fullscreen control uses a compact icon instead of text.
 - Leaderboard-ready TypeScript models live in `src/game/leaderboardTypes.ts`.
 - Run submissions are validated server-side in `src/server/scoreValidation.ts`.
 - Mock API routes are available at `POST /api/runs` and `GET /api/leaderboard`.
