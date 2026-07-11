@@ -71,6 +71,7 @@ Local file changes alone do not update `https://skool-game.vercel.app`. The live
 - Leaderboard tabs provide Global, My Category, and My Difficulty views.
 - Wins now open a run summary with MRR, score, rank status, engagement, members, Play Again, and View Leaderboard actions.
 - Win and failed Builder runs now show a short community-building lesson so the result teaches a specific improvement.
+- Builder results now include a run recap with the player's best decision, riskiest decision, and a suggested next-run focus.
 - Play Again clears result overlays and returns to the mission/countdown flow for a clean new run.
 - Win and leaderboard screens update the local best-run summary after accepted score submissions.
 - First-time players see the How It Works onboarding once before the mission. Later runs go straight from Start Playing to the mission screen.
@@ -94,6 +95,18 @@ Local file changes alone do not update `https://skool-game.vercel.app`. The live
 - Keep the Canvas game playable while moving the game code into modular TypeScript files.
 - Start with pure modules for categories, collectibles, scoring, Builder decisions, onboarding state, and leaderboard payloads.
 - Move rendering and input last, so the current mobile swipe controls and desktop arrow/A-D controls stay stable during the refactor.
+
+## Public Launch Checklist
+
+- Test mobile swipe controls, desktop arrow/A-D controls, pause, fullscreen, audio, Play Again, Main Menu, and leaderboard on real devices.
+- Balance-test Arcade and Community Builder Mode until wins, losses, and recoveries all feel understandable within a few runs.
+- Add stronger server-side anti-cheat checks before treating leaderboard scores as serious public competition.
+- Keep Supabase service-role keys only in Vercel environment variables and never in client files.
+- Confirm Supabase RLS, API rate limits, display-name sanitization, and leaderboard abuse handling before wider promotion.
+- Add privacy copy before storing real profiles, names, analytics, or email/auth data.
+- Track simple launch analytics: starts, mode choice, win/loss reason, run length, score submit success, and leaderboard views.
+- Check rights for music and any Skool-inspired visual references before broad public sharing.
+- Keep dependency audits in the release checklist; the current high-severity Next.js audit finding was cleared by updating to Next `15.5.20`.
 - High Ticket Sale can appear after monetization and awards +$500 MRR before streak multipliers.
 
 ## Structure
