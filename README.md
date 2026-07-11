@@ -9,6 +9,19 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+## Deploy latest version
+
+Run this in Git Bash, not in the browser and not inside Vercel:
+
+```bash
+cd "/c/Users/Alexeev/Documents/SKOOL GAME/skool-game"
+bash scripts/deploy.sh "Update Skool Game"
+```
+
+The script builds the project, stages the app files, commits them, and pushes to GitHub. Vercel then deploys automatically from the GitHub push.
+
+Local file changes alone do not update `https://skool-game.vercel.app`. The live site changes only after GitHub receives a new commit and Vercel finishes the deployment.
+
 ## Mobile controls
 
 - Swipe left or right anywhere on the game screen to switch lanes.
@@ -24,7 +37,7 @@ Open `http://localhost:3000`.
 - The start screen offers Arcade Mode and Community Builder Mode.
 - Community Builder Mode adds audience, problem, and first-offer choices before the run starts.
 - Community Builder Mode teaches the loop: attract members, convert them, retain them, monetize, reinvest, and grow faster.
-- Builder decisions affect cash, churn, reputation, founder energy, paid members, activity, members, and MRR.
+- Builder decisions affect cash, churn, reputation, founder energy, paid members, engagement, members, and MRR.
 - Builder wins require a healthier business, not only enough MRR: retention, reputation, and founder energy must stay stable.
 - Custom background music is loaded from `public/audio/SKOOL GAME.wav` after the player starts a run.
 - The music button toggles background music plus generated WebAudio sound effects and stores that preference locally.
@@ -40,7 +53,7 @@ Open `http://localhost:3000`.
 - The in-game leaderboard can filter by category and difficulty.
 - Leaderboard results are deduped to the best run per browser player id before ranking.
 - Leaderboard tabs provide Global, My Category, and My Difficulty views.
-- Wins now open a run summary with MRR, score, rank status, activity, members, Play Again, and View Leaderboard actions.
+- Wins now open a run summary with MRR, score, rank status, engagement, members, Play Again, and View Leaderboard actions.
 - Win and leaderboard screens update the local best-run summary after accepted score submissions.
 - When `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are configured, the API stores runs and reads the leaderboard from Supabase.
 - Without Supabase environment variables, the API falls back to in-memory mock storage for local development.
@@ -49,7 +62,7 @@ Open `http://localhost:3000`.
 - Collectibles use clearer in-game visuals for posts and flames.
 - Member and spam-risk avatars now use varied shirt colors and short/long hair variants.
 - Object spawning tries to keep distance between newly spawned lane objects.
-- Engagement streak now increases Activity and positive MRR rewards at 3, 5, 10, and 20 collected engagement actions.
+- Engagement streak now increases Engagement and positive MRR rewards at 3, 5, 10, and 20 collected engagement actions.
 - Churn and bad spam reset the engagement streak.
 - Feedback messages now use Skool-style community events instead of only numeric notices.
 - Referral Wave can spawn 2-4 members as a group.
@@ -60,20 +73,22 @@ Open `http://localhost:3000`.
 
 ```text
 skool-game/
-├── public/
-│   ├── audio/
-│   ├── sprites/
-│   ├── icons/
-│   ├── backgrounds/
-│   └── game/
-├── src/
-│   ├── game/
-│   ├── components/
-│   ├── app/
-│   └── server/
-├── README.md
-├── package.json
-└── .env.local
+|-- public/
+|   |-- audio/
+|   |-- sprites/
+|   |-- icons/
+|   |-- backgrounds/
+|   `-- game/
+|-- src/
+|   |-- game/
+|   |-- components/
+|   |-- app/
+|   `-- server/
+|-- scripts/
+|   `-- deploy.sh
+|-- README.md
+|-- package.json
+`-- .env.local
 ```
 
 ## Online Safety Architecture
@@ -83,8 +98,8 @@ skool-game/
 - Store production secrets only in Vercel Environment Variables.
 - Do not let the browser write trusted leaderboard rows directly.
 - Score submissions must go through server routes first.
-- Server routes validate category, difficulty, duration, activity, members, MRR, and win state before accepting a run.
-- Server-side plausibility checks reject impossible win duration, level/activity mismatch, MRR below the category win goal, and extreme activity/member/MRR growth for the submitted duration.
+- Server routes validate category, difficulty, duration, engagement, members, MRR, and win state before accepting a run.
+- Server-side plausibility checks reject impossible win duration, level/engagement mismatch, MRR below the category win goal, and extreme engagement/member/MRR growth for the submitted duration.
 - Server routes rate-limit score submissions by player id and request IP as a first anti-spam layer.
 - Current leaderboard storage is an in-memory mock for architecture testing only.
 - Local browser player ids are not secure identity; they are only a preparation step before real profiles/auth.

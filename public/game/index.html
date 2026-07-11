@@ -16,9 +16,9 @@ canvas{width:100%;height:100%;display:block;image-rendering:pixelated;touch-acti
 .group{display:flex;gap:5px;flex-wrap:wrap}
 .chip{background:#fff;border:3px solid var(--navy);box-shadow:3px 3px 0 var(--navy);padding:5px 7px;min-width:74px;text-align:center;font-weight:1000;font-size:12px;color:var(--navy)}
 .controls{position:absolute;left:0;right:0;bottom:max(10px,env(safe-area-inset-bottom));display:flex;justify-content:center;gap:16px;z-index:7}
-.btn{width:72px;height:62px;border:4px solid var(--navy);box-shadow:5px 5px 0 var(--navy);background:#fff;font-size:29px;font-weight:1000;touch-action:manipulation}
+.btn{width:72px;height:62px;border:4px solid var(--navy);box-shadow:5px 5px 0 var(--navy);background:#fff;font-size:17px;line-height:1;font-weight:1000;touch-action:manipulation;display:grid;place-items:center;padding:0}
 .btn:active,.primary:active{transform:translate(4px,4px);box-shadow:1px 1px 0 var(--navy)}
-.corner{position:absolute;bottom:max(12px,env(safe-area-inset-bottom));z-index:8;width:52px;height:52px;font-size:23px}
+.corner{position:absolute;bottom:max(12px,env(safe-area-inset-bottom));z-index:8;width:52px;height:52px;font-size:13px}
 #settingsBtn{right:max(12px,env(safe-area-inset-right))}
 #leaderboardBtn{right:max(76px,calc(env(safe-area-inset-right) + 76px))}
 #fullscreenBtn{left:max(12px,env(safe-area-inset-left))}
@@ -73,6 +73,8 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
   .brand{font-size:11px;padding:5px 9px}
   .hud{top:42px;left:5px;right:5px}
   .chip{font-size:10px;min-width:59px;padding:4px;border-width:2px;box-shadow:2px 2px 0 var(--navy)}
+  .btn{width:62px;height:54px;font-size:13px}
+  .corner{width:48px;height:48px;font-size:11px}
   .form,.legend{grid-template-columns:1fr}
   .builderFields{grid-template-columns:1fr}
   .leaderFilters{grid-template-columns:1fr}
@@ -94,7 +96,7 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
   <div class="group">
     <div class="chip">LV <span id="level">1</span></div>
     <div class="chip"><span id="catHud">HOBBIES</span><br><small id="modeHud">FREE</small></div>
-    <div class="chip">ACT <span id="activity">0</span></div>
+    <div class="chip">ENG <span id="activity">0</span></div>
     <div class="chip">GOAL <span id="goal">200</span></div>
   </div>
   <div class="group">
@@ -113,11 +115,11 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
 <div id="swipeHint">SWIPE LEFT OR RIGHT</div>
 
 <div class="controls">
-  <button class="btn" id="pauseBtn">PAUSE</button>
-  <button class="btn" id="leftBtn">LEFT</button>
-  <button class="btn" id="rightBtn">RIGHT</button>
+  <button class="btn" id="pauseBtn">II</button>
+  <button class="btn" id="leftBtn">&lt;</button>
+  <button class="btn" id="rightBtn">&gt;</button>
 </div>
-<button class="btn corner" id="fullscreenBtn">FULL</button>
+<button class="btn corner" id="fullscreenBtn">FS</button>
 <button class="btn corner" id="musicBtn">MUS</button>
 <button class="btn corner" id="settingsBtn">SET</button>
 
@@ -126,7 +128,7 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
 <div class="overlay" id="startOverlay">
   <div class="panel">
     <h1>SKOOL GAME</h1>
-    <p>Swipe left or right to change lanes. Reach 500 activity, monetize your community, and hit your MRR target.</p>
+    <p>Swipe left or right to change lanes. Reach 500 engagement, monetize your community, and hit your MRR target.</p>
     <div class="form">
       <label>PLAYER NAME<input id="playerName" value="Player" maxlength="18"></label>
       <label>MODE<select id="gameMode"><option value="arcade">Arcade Mode</option><option value="builder">Community Builder Mode</option></select></label>
@@ -143,16 +145,16 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
     <div class="profileInfo" id="profileInfo"></div>
     <div class="profileBest" id="profileBest"></div>
     <div class="legend">
-      <div>Member: +1 member, +10 activity; after monetization +$30 MRR.</div>
-      <div>Post: +20 activity.</div>
-      <div>Flame: +3 activity and churn protection.</div>
-      <div>CHURN: lose members, activity, and MRR.</div>
-      <div>Spam Risk: good member or half your activity.</div>
+      <div>Member: +1 member, +10 engagement; after monetization +$30 MRR.</div>
+      <div>Post: +20 engagement.</div>
+      <div>Flame: +3 engagement and churn protection.</div>
+      <div>CHURN: lose members, engagement, and MRR.</div>
+      <div>Spam Risk: good member or half your engagement.</div>
       <div>Growth Boost: rare member trail.</div>
       <div>7-DAY FREE TRIAL: +10 paying members and +$300 MRR.</div>
       <div>Dollar: +$100 MRR.</div>
       <div>About Page: Adjust About Page or Make No Adjustments; both are risky.</div>
-      <div>At 500 activity: choose Monetize or Do Not Monetize.</div>
+      <div>At 500 engagement: choose Monetize or Do Not Monetize.</div>
     </div>
     <button class="primary" id="startBtn">START GAME</button>
   </div>
@@ -170,7 +172,7 @@ select,input{width:100%;margin-top:5px;padding:10px;border:4px solid var(--navy)
       <div class="summaryCard"><small>MRR</small><span id="winSummaryMrr">$0</span></div>
       <div class="summaryCard"><small>SCORE</small><span id="winSummaryScore">0</span></div>
       <div class="summaryCard"><small>RANK</small><span id="winSummaryRank">...</span></div>
-      <div class="summaryCard"><small>ACTIVITY</small><span id="winSummaryActivity">0</span></div>
+      <div class="summaryCard"><small>ENGAGEMENT</small><span id="winSummaryActivity">0</span></div>
       <div class="summaryCard"><small>MEMBERS</small><span id="winSummaryMembers">0</span></div>
       <div class="summaryCard"><small>MODE</small><span id="winSummaryMode">-</span></div>
     </div>
@@ -234,7 +236,7 @@ function updateBestRun(run,rank){if(!run)return;const old=readBestRun();const sc
 const music=new Audio('/audio/SKOOL%20GAME.wav');
 music.loop=true;music.volume=.35;music.preload='auto';
 let musicMuted=localStorage.getItem('skoolGameMusicMuted')==='true';
-function updateMusicButton(){const b=$('musicBtn');if(b)b.textContent=musicMuted?'MUT':'MUS'}
+function updateMusicButton(){const b=$('musicBtn');if(b)b.textContent=musicMuted?'OFF':'MUS'}
 function syncMusic(){if(musicMuted||!s?.running||s.paused){music.pause();return}music.play().catch(()=>{})}
 function toggleMusic(){musicMuted=!musicMuted;localStorage.setItem('skoolGameMusicMuted',String(musicMuted));updateMusicButton();if(!musicMuted)unlockAudio();syncMusic()}
 let audioCtx=null,lastSfxAt=0;
@@ -446,17 +448,17 @@ function px(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),
 function roadDraw(){ctx.fillStyle='#cfeaf7';ctx.fillRect(0,0,W,H);ctx.fillStyle='#9fdb96';ctx.fillRect(0,roadTop,W,H-roadTop);ctx.beginPath();ctx.moveTo(road.bl,roadBottom);ctx.lineTo(road.tl,roadTop);ctx.lineTo(road.tr,roadTop);ctx.lineTo(road.br,roadBottom);ctx.closePath();ctx.fillStyle='#3b4655';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=12;ctx.stroke();ctx.strokeStyle='#071426';ctx.lineWidth=4;ctx.stroke();ctx.save();ctx.clip();for(let d=1;d<=2;d++)for(let y=roadTop+18+s.offset;y<H;y+=72){const b1=bounds(y),b2=bounds(y+34),x1=b1.l+(b1.r-b1.l)*d/3,x2=b2.l+(b2.r-b2.l)*d/3;ctx.strokeStyle='#fff';ctx.lineWidth=4+10*(y-roadTop)/(roadBottom-roadTop);ctx.beginPath();ctx.moveTo(x1,y);ctx.lineTo(x2,y+34);ctx.stroke()}ctx.restore()}
 function runner(x,y,sc=.8,shirt='#2f61ff',icon='',style={}){const z=Math.sin(s.time*.28),hair=style.hair||'#3b241a';ctx.globalAlpha=.2;px(x-16*sc,y+28*sc,32*sc,7*sc,'#071426');ctx.globalAlpha=1;px(x-10*sc,y+10*sc,8*sc,(17+z*4)*sc,'#071426');px(x+2*sc,y+10*sc,8*sc,(17-z*4)*sc,'#071426');px(x-14*sc,y-10*sc,28*sc,25*sc,style.shirt||shirt);px(x-20*sc,y-5*sc,7*sc,19*sc,'#f0b58f');px(x+13*sc,y-5*sc,7*sc,19*sc,'#f0b58f');px(x-11*sc,y-27*sc,22*sc,19*sc,'#f0b58f');px(x-13*sc,y-32*sc,26*sc,11*sc,hair);if(style.longHair){px(x-16*sc,y-24*sc,7*sc,25*sc,hair);px(x+9*sc,y-24*sc,7*sc,25*sc,hair)}if(icon){ctx.font=Math.max(12,18*sc)+'px sans-serif';ctx.textAlign='center';ctx.fillText(icon,x,y+7*sc)}}
 function followers(){const vis=Math.min(28,s.followers.length);for(let i=0;i<vis;i++){const row=Math.floor(i/5),col=i%5,count=Math.min(5,vis-row*5),y=s.player.y+66+row*42,off=(col-(count-1)/2)*38,b=bounds(y),x=Math.max(b.l+18,Math.min(b.r-18,s.player.x+off));runner(x,y,.55,s.followers[i].style?.shirt||'#43b8f4',cat().icons[s.followers[i].icon],s.followers[i].style)}}
-function postIcon(x,y){ctx.globalAlpha=.18;ctx.beginPath();ctx.arc(x,y,36,0,Math.PI*2);ctx.fillStyle='#2f61ff';ctx.fill();ctx.globalAlpha=1;px(x-24,y-29,48,58,'#fff');px(x-24,y-29,48,8,'#2f61ff');px(x-15,y-12,30,5,'#071426');px(x-15,y,23,5,'#071426');px(x-15,y+12,30,5,'#071426');ctx.fillStyle='#071426';ctx.font='900 12px monospace';ctx.textAlign='center';ctx.fillText('POST',x,y+27)}
-function flameIcon(x,y){ctx.globalAlpha=.22;ctx.beginPath();ctx.arc(x,y,38,0,Math.PI*2);ctx.fillStyle='#ff493b';ctx.fill();ctx.globalAlpha=1;px(x-18,y-22,36,44,'#ff493b');px(x-10,y-10,20,30,'#ffc83d');ctx.fillStyle='#071426';ctx.font='900 12px monospace';ctx.textAlign='center';ctx.fillText('FIRE',x,y+35);ctx.strokeStyle='#071426';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,31,0,Math.PI*2);ctx.stroke()}
+function postIcon(x,y){ctx.globalAlpha=.2;ctx.beginPath();ctx.arc(x,y,38,0,Math.PI*2);ctx.fillStyle='#2f61ff';ctx.fill();ctx.globalAlpha=1;px(x-25,y-30,50,60,'#fff');px(x-25,y-30,50,9,'#2f61ff');px(x-17,y-13,34,5,'#071426');px(x-17,y-1,27,5,'#31445c');px(x-17,y+11,34,5,'#31445c');px(x+7,y+20,12,5,'#ffc83d');ctx.strokeStyle='#071426';ctx.lineWidth=4;ctx.strokeRect(x-25,y-30,50,60)}
+function flameIcon(x,y){ctx.globalAlpha=.22;ctx.beginPath();ctx.arc(x,y,39,0,Math.PI*2);ctx.fillStyle='#ff493b';ctx.fill();ctx.globalAlpha=1;ctx.beginPath();ctx.moveTo(x,y-34);ctx.lineTo(x+21,y-4);ctx.lineTo(x+12,y+24);ctx.lineTo(x,y+34);ctx.lineTo(x-15,y+19);ctx.lineTo(x-22,y-2);ctx.closePath();ctx.fillStyle='#ff493b';ctx.fill();ctx.strokeStyle='#071426';ctx.lineWidth=4;ctx.stroke();ctx.beginPath();ctx.moveTo(x+1,y-12);ctx.lineTo(x+11,y+7);ctx.lineTo(x+1,y+24);ctx.lineTo(x-8,y+9);ctx.closePath();ctx.fillStyle='#ffc83d';ctx.fill();ctx.strokeStyle='#071426';ctx.lineWidth=2;ctx.stroke()}
 function magnetIcon(x,y){ctx.beginPath();ctx.arc(x,y,32,0,Math.PI*2);ctx.fillStyle='#9b6cff';ctx.fill();ctx.strokeStyle='#071426';ctx.lineWidth=5;ctx.stroke();ctx.fillStyle='#fff';ctx.font='900 30px sans-serif';ctx.textAlign='center';ctx.fillText('U',x,y+11)}
 function referralIcon(o){runner(o.x-18,o.y,.55,'#2fd16f',cat().icons[o.icon],o.styles?.[0]);runner(o.x+18,o.y,.55,'#ffc83d',cat().icons[(o.icon+1)%cat().icons.length],o.styles?.[1]);ctx.fillStyle='#071426';ctx.font='900 14px monospace';ctx.textAlign='center';ctx.fillText('x'+(o.count||3),o.x,o.y+38)}
 function highTicketIcon(x,y){ctx.beginPath();ctx.arc(x,y,34,0,Math.PI*2);ctx.fillStyle='#ffc83d';ctx.fill();ctx.strokeStyle='#071426';ctx.lineWidth=5;ctx.stroke();ctx.fillStyle='#071426';ctx.font='900 14px monospace';ctx.textAlign='center';ctx.fillText('HIGH',x,y-4);ctx.fillText('$500',x,y+13)}
-function object(o){if(o.type==='member'||o.type==='spam'){runner(o.x,o.y,.76,o.style?.shirt||'#43b8f4',cat().icons[o.icon],o.style);if(o.type==='spam'){px(o.x+22,o.y-38,18,28,'#ff493b');px(o.x+28,o.y-31,6,14,'#fff');px(o.x+28,o.y-11,6,6,'#fff')}}else if(o.type==='post'){postIcon(o.x,o.y)}else if(o.type==='flame'){flameIcon(o.x,o.y)}else if(o.type==='magnet'){magnetIcon(o.x,o.y)}else if(o.type==='referral'){referralIcon(o)}else if(o.type==='highTicket'){highTicketIcon(o.x,o.y)}else if(o.type==='boost'){ctx.beginPath();ctx.arc(o.x,o.y,34,0,Math.PI*2);ctx.fillStyle='#ffc83d';ctx.fill();ctx.strokeStyle='#071426';ctx.lineWidth=5;ctx.stroke();ctx.fillStyle='#071426';ctx.font='900 12px monospace';ctx.textAlign='center';ctx.fillText('BOOST',o.x,o.y+4)}else if(o.type==='trial'){px(o.x-42,o.y-26,84,52,'#fff');ctx.fillStyle='#071426';ctx.font='900 12px monospace';ctx.textAlign='center';ctx.fillText('7-DAY FREE',o.x,o.y);ctx.fillText('TRIAL',o.x,o.y+16)}else if(o.type==='dollar'){ctx.beginPath();ctx.arc(o.x,o.y,30,0,Math.PI*2);ctx.fillStyle='#2fd16f';ctx.fill();ctx.strokeStyle='#071426';ctx.lineWidth=5;ctx.stroke();ctx.fillStyle='#fff';ctx.font='900 34px monospace';ctx.textAlign='center';ctx.fillText('$',o.x,o.y+11)}else{px(o.x-42,o.y-20,84,40,'#ff493b');ctx.fillStyle='#fff';ctx.font='900 16px monospace';ctx.textAlign='center';ctx.fillText('CHURN',o.x,o.y+6)}}
+function object(o){if(o.type==='member'||o.type==='spam'){runner(o.x,o.y,.76,o.style?.shirt||'#43b8f4',cat().icons[o.icon],o.style);if(o.type==='spam'){px(o.x+22,o.y-38,18,28,'#ff493b');px(o.x+28,o.y-31,6,14,'#fff');px(o.x+28,o.y-11,6,6,'#fff')}}else if(o.type==='post'){postIcon(o.x,o.y)}else if(o.type==='flame'){flameIcon(o.x,o.y)}else if(o.type==='magnet'){magnetIcon(o.x,o.y)}else if(o.type==='referral'){referralIcon(o)}else if(o.type==='highTicket'){highTicketIcon(o.x,o.y)}else if(o.type==='boost'){ctx.beginPath();ctx.arc(o.x,o.y,34,0,Math.PI*2);ctx.fillStyle='#ffc83d';ctx.fill();ctx.strokeStyle='#071426';ctx.lineWidth=5;ctx.stroke();ctx.beginPath();ctx.moveTo(o.x+2,o.y-24);ctx.lineTo(o.x-15,o.y+3);ctx.lineTo(o.x,o.y+3);ctx.lineTo(o.x-7,o.y+26);ctx.lineTo(o.x+17,o.y-5);ctx.lineTo(o.x+2,o.y-5);ctx.closePath();ctx.fillStyle='#071426';ctx.fill()}else if(o.type==='trial'){px(o.x-42,o.y-26,84,52,'#fff');ctx.fillStyle='#071426';ctx.font='900 12px monospace';ctx.textAlign='center';ctx.fillText('7-DAY FREE',o.x,o.y);ctx.fillText('TRIAL',o.x,o.y+16)}else if(o.type==='dollar'){ctx.beginPath();ctx.arc(o.x,o.y,30,0,Math.PI*2);ctx.fillStyle='#2fd16f';ctx.fill();ctx.strokeStyle='#071426';ctx.lineWidth=5;ctx.stroke();ctx.fillStyle='#fff';ctx.font='900 34px monospace';ctx.textAlign='center';ctx.fillText('$',o.x,o.y+11)}else{px(o.x-42,o.y-20,84,40,'#ff493b');ctx.fillStyle='#fff';ctx.font='900 16px monospace';ctx.textAlign='center';ctx.fillText('CHURN',o.x,o.y+6)}}
 function labelLines(label){if(label==='FREE CHALLENGE')return['FREE','CHALLENGE'];if(label==='STARTER OFFER')return['STARTER','OFFER'];if(label==='PAYMENT PLAN')return['PAYMENT','PLAN'];if(label==='WEEKLY CALL')return['WEEKLY','CALL'];if(label==='ADJUST ABOUT PAGE')return['ADJUST','ABOUT'];if(label==='MAKE NO ADJUSTMENTS')return['NO','ADJUST'];return String(label).split(' ').slice(0,2)}
 function decisionDraw(){if(!s.decision)return;for(const c of[s.decision.left,s.decision.right]){const x=laneX(c.lane,s.decision.y),y=s.decision.y,w=s.decision.kind==='builder'?142:118,h=s.decision.kind==='builder'?68:58;ctx.fillStyle='#fff';ctx.fillRect(x-w/2,y-h/2,w,h);ctx.strokeStyle='#071426';ctx.lineWidth=5;ctx.strokeRect(x-w/2,y-h/2,w,h);ctx.fillStyle=(c.n>0||c.a==='double'||c.label==='MONETIZE'||c.fx)?'#2fd16f':'#ff493b';ctx.fillRect(x-w/2+5,y-h/2+5,w-10,8);ctx.fillStyle='#071426';ctx.textAlign='center';ctx.font='900 16px monospace';const lines=labelLines(c.label);ctx.fillText(lines[0]||'',x,y-4);if(lines[1])ctx.fillText(lines[1],x,y+15)}}
 function draw(){roadDraw();s.objects.forEach(object);decisionDraw();followers();runner(s.player.x,s.player.y,1,'#071426','YOU');if(s.shield){ctx.strokeStyle='#ffc83d';ctx.lineWidth=5;ctx.beginPath();ctx.arc(s.player.x,s.player.y,45,0,Math.PI*2);ctx.stroke()}}
 function loop(){update();draw();requestAnimationFrame(loop)}
-function info(){const c=cats[ui.category.value],d=diffs[ui.difficulty.value],target=Math.round(d.base*c.m/100)*100,bp=builderProfile();ui.categoryInfo.innerHTML=`<strong>${c.name}</strong><br>${c.desc}<br>Win target: $${target} MRR`;ui.builderFields.classList.toggle('hidden',!isBuilderMode());ui.modeLesson.textContent=isBuilderMode()?'Community Builder: '+bp.audience.name+' solving "'+bp.problem.name+'" with '+bp.offer.name+'. Learn attract -> convert -> retain -> monetize -> reinvest.':'Arcade Mode: collect, avoid churn, monetize at 500 activity, and reach the MRR goal.'}
+function info(){const c=cats[ui.category.value],d=diffs[ui.difficulty.value],target=Math.round(d.base*c.m/100)*100,bp=builderProfile();ui.categoryInfo.innerHTML=`<strong>${c.name}</strong><br>${c.desc}<br>Win target: $${target} MRR`;ui.builderFields.classList.toggle('hidden',!isBuilderMode());ui.modeLesson.textContent=isBuilderMode()?'Community Builder: '+bp.audience.name+' solving "'+bp.problem.name+'" with '+bp.offer.name+'. Learn attract -> convert -> retain -> monetize -> reinvest.':'Arcade Mode: collect engagement, avoid churn, monetize at 500 engagement, and reach the MRR goal.'}
 const allCat=document.createElement('option');allCat.value='';allCat.textContent='All Categories';ui.leaderboardCategory.appendChild(allCat);
 populate();ui.category.value='hobbies';ui.settingsCategory.value='hobbies';ui.leaderboardCategory.value='';ui.playerName.value=localStorage.getItem(PLAYER_NAME_KEY)||ui.playerName.value;info();profileInfo();reset();updateMusicButton();updateLeaderboardTabs();
 ui.category.onchange=()=>{info();profileInfo()};ui.difficulty.onchange=()=>{info();profileInfo()};ui.gameMode.onchange=info;ui.audience.onchange=info;ui.problem.onchange=info;ui.firstOffer.onchange=info;ui.playerName.oninput=()=>{localStorage.setItem(PLAYER_NAME_KEY,ui.playerName.value.trim().replace(/\s+/g,' ').slice(0,18)||'Player');profileInfo()};ui.playerName.onchange=playerName;ui.leaderboardCategory.onchange=()=>{leaderboardScope='global';updateLeaderboardTabs();loadLeaderboard()};ui.leaderboardDifficulty.onchange=()=>{leaderboardScope='global';updateLeaderboardTabs();loadLeaderboard()};
