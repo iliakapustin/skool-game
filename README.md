@@ -71,6 +71,7 @@ Local file changes alone do not update `https://skool-game.vercel.app`. The live
 - Leaderboard tabs provide Global, My Category, and My Difficulty views.
 - Wins now open a run summary with MRR, score, rank status, engagement, members, Play Again, and View Leaderboard actions.
 - Win and failed Builder runs now show a short community-building lesson so the result teaches a specific improvement.
+- Play Again clears result overlays and returns to the mission/countdown flow for a clean new run.
 - Win and leaderboard screens update the local best-run summary after accepted score submissions.
 - First-time players see the How It Works onboarding once before the mission. Later runs go straight from Start Playing to the mission screen.
 - When `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are configured, the API stores runs and reads the leaderboard from Supabase.
