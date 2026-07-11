@@ -47,9 +47,12 @@ Local file changes alone do not update `https://skool-game.vercel.app`. The live
 - The HUD includes a live engagement progress bar toward the next level goal.
 - Collectibles now create readable floating feedback such as +20 ENG, +MRR, STREAK, BOOST, and CHURN.
 - The Canvas road scene has a cleaner horizon-based roadside system where scenery starts small near the horizon, moves downward, and grows with perspective.
-- Roadside scenery is intentionally sparse and fades before the bottom of the screen to avoid visual clutter around the player and followers.
+- Roadside scenery is intentionally sparse, moves more slowly than road collectibles, and fades before the bottom of the screen to avoid visual clutter around the player and followers.
 - Skool-themed scenery can appear beside the road, including SKOOL LAB, SKOOL OFFICE, SKOOL BUS, and a small Skool cat.
 - Member Magnet now uses a clear horseshoe magnet icon, and monetized runs no longer add a green road wash.
+- The start screen is compact; detailed rules live behind a How It Works button.
+- Starting a run now shows a mission briefing, then a 3-2-1-GO countdown with generated start sounds.
+- Member avatars carry small category-specific items such as cash, contracts, balls, guitars, laptops, hearts, books, or fitness gear.
 - Leaderboard-ready TypeScript models live in `src/game/leaderboardTypes.ts`.
 - Run submissions are validated server-side in `src/server/scoreValidation.ts`.
 - Mock API routes are available at `POST /api/runs` and `GET /api/leaderboard`.
