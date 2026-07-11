@@ -35,6 +35,7 @@ Local file changes alone do not update `https://skool-game.vercel.app`. The live
 - The Canvas prototype is served from `public/game/index.html`.
 - Visible game UI uses English ASCII labels to avoid broken emoji/symbol rendering across browsers and deployments.
 - The start screen offers Arcade Mode and Community Builder Mode.
+- Categories are Hobbies, Music, Money, Spirituality, Tech, Health, Sports, Self Improvement, and Relationships.
 - Community Builder Mode adds audience, problem, and first-offer choices before the run starts.
 - Community Builder Mode teaches the loop: attract members, convert them, retain them, monetize, reinvest, and grow faster.
 - Builder decisions affect cash, churn, reputation, founder energy, paid members, engagement, members, and MRR.

@@ -26,9 +26,8 @@ const CATEGORY_FACTORS = {
   spirituality: { f: 0.92, m: 1.2 },
   tech: { f: 1.28, m: 2 },
   health: { f: 1.08, m: 1.45 },
-  careers: { f: 1.05, m: 1.4 },
   sports: { f: 0.95, m: 1.25 },
-  love: { f: 0.9, m: 1.15 },
+  relationships: { f: 0.9, m: 1.15 },
   selfImprovement: { f: 1.15, m: 1.65 },
 } as const satisfies Record<GameRunSubmission["category"], { f: number; m: number }>;
 

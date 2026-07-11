@@ -7,9 +7,8 @@ export const GAME_CATEGORIES = [
   "spirituality",
   "tech",
   "health",
-  "careers",
   "sports",
-  "love",
+  "relationships",
   "selfImprovement",
 ] as const;
 
