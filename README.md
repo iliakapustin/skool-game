@@ -40,7 +40,10 @@ Local file changes alone do not update `https://skool-game.vercel.app`. The live
 - Community Builder Mode teaches the loop: attract members, convert them, retain them, monetize, reinvest, and grow faster.
 - Builder decisions affect cash, churn, reputation, founder energy, paid members, engagement, members, and MRR.
 - Builder decision cards now show the tradeoff on the card, such as quality versus energy, volume versus cash, or retention versus founder energy.
+- Builder choices now show a short post-choice result panel with the selected action, direct stat changes, and the strategic lesson.
+- Cash can go negative in Builder Mode to represent runway pressure. MRR remains recurring revenue and does not go negative from spending.
 - Builder wins require a healthier business, not only enough MRR: retention, reputation, and founder energy must stay stable.
+- Players can now lose. Arcade can end when members or engagement collapse; Builder Mode can also end from cash runway failure, churn spiral, reputation collapse, or founder energy burnout.
 - Custom background music is loaded from `public/audio/SKOOL GAME.wav` after the player starts a run.
 - The music button toggles background music plus generated WebAudio sound effects and stores that preference locally.
 - Generated sound effects play for lane movement, collectibles, MRR rewards, hazards, boosts, and wins.
@@ -79,6 +82,7 @@ Local file changes alone do not update `https://skool-game.vercel.app`. The live
 - Object spawning tries to keep distance between newly spawned lane objects.
 - Engagement streak now increases Engagement and positive MRR rewards at 3, 5, 10, and 20 collected engagement actions.
 - Churn and bad spam reset the engagement streak.
+- Churn now removes engagement more aggressively because lost members also weaken community momentum.
 - Feedback messages now use Skool-style community events instead of only numeric notices.
 - Referral Wave can spawn 2-4 members as a group.
 - Member Magnet temporarily collects members and referral groups from nearby lanes.
