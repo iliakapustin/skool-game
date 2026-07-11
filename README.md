@@ -20,6 +20,7 @@ Open `http://localhost:3000`.
 ## Current prototype notes
 
 - The Canvas prototype is served from `public/game/index.html`.
+- Visible game UI uses English ASCII labels to avoid broken emoji/symbol rendering across browsers and deployments.
 - The start screen offers Arcade Mode and Community Builder Mode.
 - Community Builder Mode adds audience, problem, and first-offer choices before the run starts.
 - Community Builder Mode teaches the loop: attract members, convert them, retain them, monetize, reinvest, and grow faster.
