@@ -39,6 +39,7 @@ Local file changes alone do not update `https://skool-game.vercel.app`. The live
 - Community Builder Mode adds audience, problem, and first-offer choices before the run starts.
 - Community Builder Mode teaches the loop: attract members, convert them, retain them, monetize, reinvest, and grow faster.
 - Builder decisions affect cash, churn, reputation, founder energy, paid members, engagement, members, and MRR.
+- Builder decision cards now show the tradeoff on the card, such as quality versus energy, volume versus cash, or retention versus founder energy.
 - Builder wins require a healthier business, not only enough MRR: retention, reputation, and founder energy must stay stable.
 - Custom background music is loaded from `public/audio/SKOOL GAME.wav` after the player starts a run.
 - The music button toggles background music plus generated WebAudio sound effects and stores that preference locally.
@@ -66,7 +67,9 @@ Local file changes alone do not update `https://skool-game.vercel.app`. The live
 - Leaderboard results are deduped to the best run per browser player id before ranking.
 - Leaderboard tabs provide Global, My Category, and My Difficulty views.
 - Wins now open a run summary with MRR, score, rank status, engagement, members, Play Again, and View Leaderboard actions.
+- Win and failed Builder runs now show a short community-building lesson so the result teaches a specific improvement.
 - Win and leaderboard screens update the local best-run summary after accepted score submissions.
+- First-time players see the How It Works onboarding once before the mission. Later runs go straight from Start Playing to the mission screen.
 - When `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are configured, the API stores runs and reads the leaderboard from Supabase.
 - Without Supabase environment variables, the API falls back to in-memory mock storage for local development.
 - Desktop start/menu layout is kept compact so the start button is visible at 1280x720.
@@ -79,6 +82,13 @@ Local file changes alone do not update `https://skool-game.vercel.app`. The live
 - Feedback messages now use Skool-style community events instead of only numeric notices.
 - Referral Wave can spawn 2-4 members as a group.
 - Member Magnet temporarily collects members and referral groups from nearby lanes.
+- Collectible icons use stronger silhouettes for posts, flames, trials, dollars, churn, boost, and member magnet so they are easier to read at speed.
+
+## Next Engineering Step
+
+- Keep the Canvas game playable while moving the game code into modular TypeScript files.
+- Start with pure modules for categories, collectibles, scoring, Builder decisions, onboarding state, and leaderboard payloads.
+- Move rendering and input last, so the current mobile swipe controls and desktop arrow/A-D controls stay stable during the refactor.
 - High Ticket Sale can appear after monetization and awards +$500 MRR before streak multipliers.
 
 ## Structure
