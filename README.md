@@ -73,6 +73,7 @@ Local file changes alone do not update `https://skool-game.vercel.app`. The live
 - Win and failed Builder runs now show a short community-building lesson so the result teaches a specific improvement.
 - Builder results now include a run recap with the player's best decision, riskiest decision, and a suggested next-run focus.
 - Play Again clears result overlays and returns to the mission/countdown flow for a clean new run.
+- Mobile gameplay widens the canvas camera horizontally so the road does not feel too narrow on tall phone screens.
 - Win and leaderboard screens update the local best-run summary after accepted score submissions.
 - First-time players see the How It Works onboarding once before the mission. Later runs go straight from Start Playing to the mission screen.
 - When `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are configured, the API stores runs and reads the leaderboard from Supabase.
